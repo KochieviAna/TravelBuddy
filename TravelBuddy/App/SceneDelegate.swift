@@ -16,10 +16,19 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: scene)
         
-        let vc = IntroductionVC()
+        let hasSeenIntroduction = UserDefaults.standard.bool(forKey: "hasSeenIntroduction")
         
-        window?.rootViewController = vc
+        let rootVC: UIViewController
+        if hasSeenIntroduction {
+            rootVC = SignInVC()
+        } else {
+            rootVC = IntroductionVC()
+        }
         
+        let navigationController = UINavigationController(rootViewController: rootVC)
+        navigationController.navigationBar.isHidden = true
+        
+        window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
     }
 }
