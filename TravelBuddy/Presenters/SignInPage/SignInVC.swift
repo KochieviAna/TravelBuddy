@@ -9,13 +9,25 @@ import UIKit
 
 final class SignInVC: UIViewController {
     
+    private lazy var scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.alwaysBounceVertical = true
+        return scrollView
+    }()
+    
+    private lazy var contentView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
     private lazy var signInLabel: UILabel = {
         let label = UILabel()
         label.text = "Sign In"
-        label.font = .robotoBold(size: 30)
+        label.font = .robotoBold(size: UIScreen.main.bounds.height < 700 ? 24 : 30)
         label.textAlignment = .right
         label.textColor = UIColor.deepBlue
-        
         return label
     }()
     
@@ -24,7 +36,6 @@ final class SignInVC: UIViewController {
         label.text = "or"
         label.font = .robotoLight(size: 15)
         label.textColor = .deepBlue
-        
         return label
     }()
     
@@ -36,7 +47,6 @@ final class SignInVC: UIViewController {
         button.addAction(UIAction(handler: { [weak self] _ in
             self?.handleJoinTravelBuddy()
         }), for: .touchUpInside)
-        
         return button
     }()
     
@@ -45,32 +55,27 @@ final class SignInVC: UIViewController {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .horizontal
         stackView.spacing = 5
-        
         return stackView
     }()
     
     private lazy var emailInputView: ReusableLabelAndTextFieldView = {
-        let view = ReusableLabelAndTextFieldView(
+        return ReusableLabelAndTextFieldView(
             label: "Email",
             placeholderText: "Enter your email",
             font: .robotoRegular(size: 15),
             isSecured: false,
             hasPasswordVisibility: false
         )
-        
-        return view
     }()
     
     private lazy var passwordInputView: ReusableLabelAndTextFieldView = {
-        let view = ReusableLabelAndTextFieldView(
+        return ReusableLabelAndTextFieldView(
             label: "Password",
             placeholderText: "Enter your password",
             font: .robotoRegular(size: 15),
             isSecured: true,
             hasPasswordVisibility: true
         )
-        
-        return view
     }()
     
     private lazy var forgotPasswordButton: UIButton = {
@@ -82,113 +87,30 @@ final class SignInVC: UIViewController {
         button.addAction(UIAction(handler: { [weak self] _ in
             self?.handleForgotPassword()
         }), for: .touchUpInside)
-        
         return button
     }()
     
-    private lazy var signInButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Sign In", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = .robotoRegular(size: 25)
-        button.backgroundColor = UIColor.deepBlue
-        button.layer.cornerRadius = 10
-        button.clipsToBounds = true
-        button.addAction(UIAction(handler: { [weak self] _ in
-            self?.handleEmailSignIn()
-        }), for: .touchUpInside)
-        
-        return button
+    private lazy var signInButton: ReusableButton = {
+        return ReusableButton(
+            title: "Sign In",
+            action: { [weak self] in
+                self?.handleSignIn()
+            }
+        )
     }()
     
-    private lazy var separatorStackView: UIStackView = {
-        let leftLine = UIView()
-        leftLine.translatesAutoresizingMaskIntoConstraints = false
-        leftLine.backgroundColor = .deepBlue.withAlphaComponent(0.5)
-        
-        NSLayoutConstraint.activate([
-            leftLine.heightAnchor.constraint(equalToConstant: 1)
-        ])
-        
-        let label = UILabel()
-        label.text = "or"
-        label.font = .robotoLight(size: 15)
-        label.textColor = .deepBlue.withAlphaComponent(0.5)
-        label.textAlignment = .center
-        
-        let rightLine = UIView()
-        rightLine.translatesAutoresizingMaskIntoConstraints = false
-        rightLine.backgroundColor = .deepBlue.withAlphaComponent(0.5)
-        
-        NSLayoutConstraint.activate([
-            rightLine.heightAnchor.constraint(equalToConstant: 1)
-        ])
-        
-        let stackView = UIStackView(arrangedSubviews: [leftLine, label, rightLine])
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.axis = .horizontal
-        stackView.alignment = .center
-        stackView.spacing = 8
-        
-        leftLine.widthAnchor.constraint(equalTo: rightLine.widthAnchor).isActive = true
-        leftLine.widthAnchor.constraint(greaterThanOrEqualToConstant: 50).isActive = true
-        
-        return stackView
-    }()
+    private lazy var separatorView = SeparatorView()
     
-    private lazy var googleSignInButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle(" Sign in with Google", for: .normal)
-        button.setTitleColor(.deepBlue.withAlphaComponent(0.5), for: .normal)
-        button.titleLabel?.font = .robotoMedium(size: 20)
-        button.backgroundColor = .primaryWhite
-        button.layer.cornerRadius = 20
-        button.clipsToBounds = false
-
-        if let googleIcon = UIImage(named: "google")?.withRenderingMode(.alwaysOriginal) {
-            button.setImage(googleIcon, for: .normal)
-        } else {
-            print("Google icon not found in assets")
-        }
-        
-        button.imageView?.contentMode = .scaleAspectFit
-
-        button.layer.shadowColor = UIColor.black.cgColor
-        button.layer.shadowOpacity = 0.2
-        button.layer.shadowOffset = CGSize(width: 0, height: 4)
-        button.layer.shadowRadius = 3
-
-        button.addAction(UIAction(handler: { [weak self] _ in
+    private lazy var googleSignInButton: GoogleSignInButton = {
+        return GoogleSignInButton { [weak self] in
             self?.handleGoogleSignIn()
-        }), for: .touchUpInside)
-
-        return button
+        }
     }()
     
-    private lazy var appleSignInButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle(" Sign in with Apple", for: .normal)
-        button.setTitleColor(.primaryWhite, for: .normal)
-        button.titleLabel?.font = .robotoMedium(size: 20)
-        button.backgroundColor = .black
-        button.layer.cornerRadius = 20
-        button.clipsToBounds = false
-        
-        let appleIcon = UIImage(systemName: "applelogo")
-        button.setImage(appleIcon, for: .normal)
-        button.imageView?.contentMode = .scaleAspectFit
-        button.tintColor = .primaryWhite
-        
-        button.layer.shadowColor = UIColor.black.cgColor
-        button.layer.shadowOpacity = 0.2
-        button.layer.shadowOffset = CGSize(width: 0, height: 4)
-        button.layer.shadowRadius = 3
-        
-        button.addAction(UIAction(handler: { [weak self] _ in
+    private lazy var appleSignInButton: AppleSignInButton = {
+        return AppleSignInButton { [weak self] in
             self?.handleAppleSignIn()
-        }), for: .touchUpInside)
-        
-        return button
+        }
     }()
     
     override func viewDidLoad() {
@@ -198,10 +120,12 @@ final class SignInVC: UIViewController {
     
     private func setupUI() {
         view.backgroundColor = .systemBackground
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
         
-        [signInLabel, joinStackView, emailInputView, passwordInputView, forgotPasswordButton, signInButton, separatorStackView, googleSignInButton, appleSignInButton].forEach {
+        [signInLabel, joinStackView, emailInputView, passwordInputView, forgotPasswordButton, signInButton, separatorView, googleSignInButton, appleSignInButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
-            view.addSubview($0)
+            contentView.addSubview($0)
         }
         
         setupConstraints()
@@ -209,53 +133,62 @@ final class SignInVC: UIViewController {
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            signInLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 100),
-            signInLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            
+            signInLabel.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 60),
+            signInLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             
             joinStackView.topAnchor.constraint(equalTo: signInLabel.bottomAnchor, constant: 10),
-            joinStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            joinStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             
-            emailInputView.topAnchor.constraint(equalTo: joinStackView.bottomAnchor, constant: 40),
-            emailInputView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            emailInputView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            emailInputView.topAnchor.constraint(equalTo: joinStackView.bottomAnchor, constant: 20),
+            emailInputView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            emailInputView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             
-            passwordInputView.topAnchor.constraint(equalTo: emailInputView.bottomAnchor, constant: 25),
+            passwordInputView.topAnchor.constraint(equalTo: emailInputView.bottomAnchor, constant: 15),
             passwordInputView.leadingAnchor.constraint(equalTo: emailInputView.leadingAnchor),
             passwordInputView.trailingAnchor.constraint(equalTo: emailInputView.trailingAnchor),
             
             forgotPasswordButton.topAnchor.constraint(equalTo: passwordInputView.bottomAnchor, constant: 10),
-            forgotPasswordButton.leadingAnchor.constraint(equalTo: passwordInputView.leadingAnchor),
+            forgotPasswordButton.trailingAnchor.constraint(equalTo: passwordInputView.trailingAnchor),
             
-            signInButton.topAnchor.constraint(equalTo: forgotPasswordButton.bottomAnchor, constant: 25),
+            signInButton.topAnchor.constraint(equalTo: forgotPasswordButton.bottomAnchor, constant: 20),
             signInButton.leadingAnchor.constraint(equalTo: passwordInputView.leadingAnchor),
             signInButton.trailingAnchor.constraint(equalTo: passwordInputView.trailingAnchor),
-            signInButton.heightAnchor.constraint(equalToConstant: 46),
             
-            separatorStackView.topAnchor.constraint(equalTo: signInButton.bottomAnchor, constant: 30),
-            separatorStackView.leadingAnchor.constraint(equalTo: signInButton.leadingAnchor),
-            separatorStackView.trailingAnchor.constraint(equalTo: signInButton.trailingAnchor),
+            separatorView.topAnchor.constraint(equalTo: signInButton.bottomAnchor, constant: 20),
+            separatorView.leadingAnchor.constraint(equalTo: signInButton.leadingAnchor),
+            separatorView.trailingAnchor.constraint(equalTo: signInButton.trailingAnchor),
             
-            googleSignInButton.topAnchor.constraint(equalTo: separatorStackView.bottomAnchor, constant: 30),
-            googleSignInButton.leadingAnchor.constraint(equalTo: separatorStackView.leadingAnchor),
-            googleSignInButton.trailingAnchor.constraint(equalTo: separatorStackView.trailingAnchor),
-            googleSignInButton.heightAnchor.constraint(equalToConstant: 48),
+            googleSignInButton.topAnchor.constraint(equalTo: separatorView.bottomAnchor, constant: 20),
+            googleSignInButton.leadingAnchor.constraint(equalTo: separatorView.leadingAnchor),
+            googleSignInButton.trailingAnchor.constraint(equalTo: separatorView.trailingAnchor),
             
             appleSignInButton.topAnchor.constraint(equalTo: googleSignInButton.bottomAnchor, constant: 15),
             appleSignInButton.leadingAnchor.constraint(equalTo: googleSignInButton.leadingAnchor),
             appleSignInButton.trailingAnchor.constraint(equalTo: googleSignInButton.trailingAnchor),
-            appleSignInButton.heightAnchor.constraint(equalToConstant: 48)
+            appleSignInButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20)
         ])
     }
     
     private func handleJoinTravelBuddy() {
-        print("Join Travel Buddy tapped")
+        navigationController?.pushViewController(SignUpVC(), animated: true)
     }
     
     private func handleForgotPassword() {
         print("Forgot Password tapped")
     }
     
-    private func handleEmailSignIn() {
+    private func handleSignIn() {
         let email = emailInputView.text
         let password = passwordInputView.text
         print("Email: \(email), Password: \(password)")
