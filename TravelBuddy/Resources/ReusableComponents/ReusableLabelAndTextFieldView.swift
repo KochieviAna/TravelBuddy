@@ -46,7 +46,7 @@ final class ReusableLabelAndTextFieldView: UIView {
         let stackView = UIStackView(arrangedSubviews: [])
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .horizontal
-        stackView.spacing = 12
+        stackView.spacing = 1
         stackView.distribution = .fill
         stackView.alignment = .center
         stackView.layer.cornerRadius = 8
@@ -138,7 +138,9 @@ final class ReusableLabelAndTextFieldView: UIView {
     private func togglePasswordVisibility() {
         isSecured.toggle()
         textField.isSecureTextEntry = isSecured
+        
         let imageName = isSecured ? "eye.slash" : "eye"
+        
         visibilityToggleButton.setImage(UIImage(systemName: imageName), for: .normal)
     }
     

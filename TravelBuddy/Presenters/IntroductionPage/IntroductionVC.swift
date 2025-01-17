@@ -9,13 +9,17 @@ import UIKit
 
 final class IntroductionVC: UIViewController {
     
-    private let introductionView = ReusableIntroductionView(
-        backgroundImage: UIImage(named: "introduction"),
-        title: "",
-        description: "",
-        buttonTitle: "",
-        showPageControl: false
-    )
+    private lazy var introductionView: ReusableIntroductionView = {
+        let view = ReusableIntroductionView(
+            backgroundImage: UIImage(named: "introduction"),
+            title: "",
+            description: "",
+            buttonTitle: "",
+            showPageControl: false
+        )
+        
+        return view
+    }()
     
     private let viewModel = IntroductionViewModel()
     
