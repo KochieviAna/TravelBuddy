@@ -42,51 +42,43 @@ final class SignUpVC: UIViewController {
     }()
     
     private lazy var fullNameInputView: ReusableLabelAndTextFieldView = {
-        let view = ReusableLabelAndTextFieldView(
+        return ReusableLabelAndTextFieldView(
             label: "Full Name",
-            placeholderText: "Enter your full name",
+            placeholderText: "Your full name",
             font: .robotoRegular(size: 15),
             isSecured: false,
             hasPasswordVisibility: false
         )
-        
-        return view
     }()
     
     private lazy var emailInputView: ReusableLabelAndTextFieldView = {
-        let view = ReusableLabelAndTextFieldView(
+        return ReusableLabelAndTextFieldView(
             label: "Email",
-            placeholderText: "Enter your email",
+            placeholderText: "Your email address",
             font: .robotoRegular(size: 15),
             isSecured: false,
             hasPasswordVisibility: false
         )
-        
-        return view
     }()
     
     private lazy var passwordInputView: ReusableLabelAndTextFieldView = {
-        let view = ReusableLabelAndTextFieldView(
+        return ReusableLabelAndTextFieldView(
             label: "Password",
-            placeholderText: "Enter your password",
+            placeholderText: "Your password",
             font: .robotoRegular(size: 15),
             isSecured: true,
             hasPasswordVisibility: true
         )
-        
-        return view
     }()
     
     private lazy var confirmPasswordInputView: ReusableLabelAndTextFieldView = {
-        let view = ReusableLabelAndTextFieldView(
+        return ReusableLabelAndTextFieldView(
             label: "Confirm Password",
             placeholderText: "Confirm your password",
             font: .robotoRegular(size: 15),
             isSecured: true,
             hasPasswordVisibility: true
         )
-        
-        return view
     }()
     
     private lazy var signUpButton: ReusableButton = {
@@ -128,6 +120,8 @@ final class SignUpVC: UIViewController {
         }
         
         setupConstraints()
+        
+        enableTapToDismissKeyboard()
     }
     
     private func setupConstraints() {
