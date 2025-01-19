@@ -46,7 +46,7 @@ final class SignInVC: UIViewController {
     private lazy var joinButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Join Travel Buddy", for: .normal)
-        button.setTitleColor(.skyBlue, for: .normal)
+        button.setTitleColor(.stoneGrey, for: .normal)
         button.titleLabel?.font = .robotoBold(size: 15)
         button.addAction(UIAction(handler: { [weak self] _ in
             self?.handleJoinTravelBuddy()
@@ -87,7 +87,7 @@ final class SignInVC: UIViewController {
     private lazy var forgotPasswordButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Forgot Password?", for: .normal)
-        button.setTitleColor(.skyBlue, for: .normal)
+        button.setTitleColor(.stoneGrey, for: .normal)
         button.titleLabel?.font = .robotoRegular(size: 12)
         button.contentHorizontalAlignment = .right
         button.addAction(UIAction(handler: { [weak self] _ in
@@ -202,7 +202,16 @@ final class SignInVC: UIViewController {
     private func handleSignIn() {
         let email = emailInputView.text
         let password = passwordInputView.text
+        
         print("Email: \(email), Password: \(password)")
+        
+        if email == "test@travelbuddy.com" && password == "password123" {
+            if let sceneDelegate = view.window?.windowScene?.delegate as? SceneDelegate {
+                sceneDelegate.switchToTabBarController()
+            }
+        } else {
+            print("Invalid credentials")
+        }
     }
     
     private func handleGoogleSignIn() {
