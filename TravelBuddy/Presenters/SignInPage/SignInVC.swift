@@ -205,6 +205,8 @@ final class SignInVC: UIViewController {
         }
         
         setupConstraints()
+        
+        enableTapToDismissKeyboard()
     }
     
     private func setupConstraints() {
