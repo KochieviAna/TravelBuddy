@@ -120,6 +120,27 @@ final class SignInVC: UIViewController {
         }
     }()
     
+    private lazy var guestSeparatorView = SeparatorView()
+    
+    private lazy var continueAsGuestButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Continue as a Guest", for: .normal)
+        button.setTitleColor(.deepBlue.withAlphaComponent(0.54), for: .normal)
+        button.titleLabel?.font = .robotoMedium(size: 20)
+        button.backgroundColor = .primaryWhite
+        button.layer.cornerRadius = 20
+        button.layer.shadowColor = UIColor.primaryBlack.cgColor
+        button.layer.shadowOffset = CGSize(width: 0, height: 4)
+        button.layer.shadowOpacity = 0.2
+        button.layer.shadowRadius = 3
+        button.addAction(UIAction(handler: { [weak self] _ in
+            self?.handleContinueAsGuest()
+        }), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        
+        return button
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -130,13 +151,12 @@ final class SignInVC: UIViewController {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         
-        [signInLabel, joinStackView, emailInputView, passwordInputView, forgotPasswordButton, signInButton, separatorView, googleSignInButton, appleSignInButton].forEach {
+        [signInLabel, joinStackView, emailInputView, passwordInputView, forgotPasswordButton, signInButton, separatorView, googleSignInButton, appleSignInButton, guestSeparatorView, continueAsGuestButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             contentView.addSubview($0)
         }
         
         setupConstraints()
-        
         enableTapToDismissKeyboard()
     }
     
@@ -187,7 +207,17 @@ final class SignInVC: UIViewController {
             appleSignInButton.topAnchor.constraint(equalTo: googleSignInButton.bottomAnchor, constant: verticalSpacing),
             appleSignInButton.leadingAnchor.constraint(equalTo: googleSignInButton.leadingAnchor),
             appleSignInButton.trailingAnchor.constraint(equalTo: googleSignInButton.trailingAnchor),
-            appleSignInButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -verticalSpacing * 2)
+            
+            guestSeparatorView.topAnchor.constraint(equalTo: appleSignInButton.bottomAnchor, constant: verticalSpacing * 1.5),
+            guestSeparatorView.leadingAnchor.constraint(equalTo: appleSignInButton.leadingAnchor),
+            guestSeparatorView.trailingAnchor.constraint(equalTo: appleSignInButton.trailingAnchor),
+            
+            continueAsGuestButton.topAnchor.constraint(equalTo: guestSeparatorView.bottomAnchor, constant: verticalSpacing),
+            continueAsGuestButton.leadingAnchor.constraint(equalTo: guestSeparatorView.leadingAnchor),
+            continueAsGuestButton.trailingAnchor.constraint(equalTo: guestSeparatorView.trailingAnchor),
+            continueAsGuestButton.heightAnchor.constraint(equalToConstant: 50),
+            continueAsGuestButton.heightAnchor.constraint(equalToConstant: 48),
+            continueAsGuestButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -verticalSpacing * 2)
         ])
     }
     
@@ -220,5 +250,13 @@ final class SignInVC: UIViewController {
     
     private func handleAppleSignIn() {
         print("Apple Sign-In tapped")
+    }
+    
+    private func handleContinueAsGuest() {
+        print("Continue as a Guest tapped")
+        
+        if let sceneDelegate = view.window?.windowScene?.delegate as? SceneDelegate {
+            sceneDelegate.switchToTabBarController()
+        }
     }
 }
