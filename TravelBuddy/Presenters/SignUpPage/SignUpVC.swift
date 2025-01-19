@@ -128,6 +128,8 @@ final class SignUpVC: UIViewController {
         }
         
         setupConstraints()
+        
+        enableTapToDismissKeyboard()
     }
     
     private func setupConstraints() {
