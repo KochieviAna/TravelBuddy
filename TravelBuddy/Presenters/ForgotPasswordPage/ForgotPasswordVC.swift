@@ -134,9 +134,7 @@ final class ForgotPasswordVC: UIViewController {
         navigationController?.popViewController(animated: true)
     }
     
-    private func handleNextButton() {
-        let email = emailInputView.text
-        
+    private func handleNextButton() {        
         navigationController?.pushViewController(EmailSentVC(), animated: true)
     }
 }

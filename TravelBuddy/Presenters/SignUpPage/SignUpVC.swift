@@ -159,23 +159,35 @@ final class SignUpVC: UIViewController {
     }
     
     private func handleSignUp() {
-        // Retrieve input values
+        fullNameInputView.setError(nil)
+        emailInputView.setError(nil)
+        passwordInputView.setError(nil)
+        confirmPasswordInputView.setError(nil)
+        
         guard let fullName = fullNameInputView.text, !fullName.isEmpty else {
-            showAlert(message: "Please enter your full name.")
+            fullNameInputView.setError("Full name is required.")
             return
         }
-        guard let email = emailInputView.text, !email.isEmpty else {
-            showAlert(message: "Please enter your email.")
+        guard let email = emailInputView.text, !email.isEmpty, isValidEmail(email) else {
+            emailInputView.setError("Enter a valid email address.")
             return
         }
+        
         guard let password = passwordInputView.text, !password.isEmpty else {
-            showAlert(message: "Please enter a password.")
+            passwordInputView.setError("Password is required.")
             return
         }
-        guard let confirmPassword = confirmPasswordInputView.text, !confirmPassword.isEmpty else {
-            showAlert(message: "Please confirm your password.")
+        
+        guard password.count >= 6 else {
+            passwordInputView.setError("Password must be at least 6 characters.")
             return
         }
+        
+        guard let confirmPassword = confirmPasswordInputView.text, confirmPassword == password else {
+            confirmPasswordInputView.setError("Passwords do not match.")
+            return
+        }
+        
         guard password == confirmPassword else {
             showAlert(message: "Passwords do not match.")
             return
@@ -227,5 +239,10 @@ final class SignUpVC: UIViewController {
             completion?()
         })
         present(alert, animated: true)
+    }
+    
+    private func isValidEmail(_ email: String) -> Bool {
+        let emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}$"
+        return NSPredicate(format: "SELF MATCHES %@", emailRegex).evaluate(with: email)
     }
 }

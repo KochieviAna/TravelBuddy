@@ -219,10 +219,10 @@ final class SignInVC: UIViewController {
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             contentView.bottomAnchor.constraint(equalTo: continueAsGuestButton.bottomAnchor, constant: 24),
             
-            signInLabel.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant:60),
+            signInLabel.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 80),
             signInLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             
-            joinStackView.topAnchor.constraint(equalTo: signInLabel.bottomAnchor, constant: 5),
+            joinStackView.topAnchor.constraint(equalTo: signInLabel.bottomAnchor, constant: 1),
             joinStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             
             emailInputView.topAnchor.constraint(equalTo: joinStackView.bottomAnchor, constant: 25),
@@ -275,12 +275,15 @@ final class SignInVC: UIViewController {
     }
     
     private func handleSignIn() {
-        guard let email = emailInputView.text, !email.isEmpty else {
-            showAlert(message: "Please enter your email.")
+        emailInputView.setError(nil)
+        passwordInputView.setError(nil)
+        
+        guard let email = emailInputView.text, !email.isEmpty, isValidEmail(email) else {
+            emailInputView.setError("Enter a valid email address.")
             return
         }
         guard let password = passwordInputView.text, !password.isEmpty else {
-            showAlert(message: "Please enter your password.")
+            passwordInputView.setError("Password is required.")
             return
         }
         
@@ -321,5 +324,10 @@ final class SignInVC: UIViewController {
             completion?()
         })
         present(alert, animated: true)
+    }
+    
+    private func isValidEmail(_ email: String) -> Bool {
+        let emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}$"
+        return NSPredicate(format: "SELF MATCHES %@", emailRegex).evaluate(with: email)
     }
 }

@@ -29,6 +29,17 @@ final class ReusableLabelAndTextFieldView: UIView {
         return textField
     }()
     
+    private lazy var errorLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.robotoLight(size: 12)
+        label.textColor = .burgundyRed
+        label.numberOfLines = 0
+        label.isHidden = true
+        
+        return label
+    }()
+    
     private lazy var visibilityToggleButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -79,25 +90,20 @@ final class ReusableLabelAndTextFieldView: UIView {
         placeholderText: String,
         font: UIFont = UIFont.robotoRegular(size: 15),
         isSecured: Bool = false,
-        hasPasswordVisibility: Bool = false,
-        showLockImage: Bool = false
+        hasPasswordVisibility: Bool = false
     ) {
         super.init(frame: .zero)
-        
         self.isSecured = isSecured
         
         setupUI()
-        
         labelView.text = label
         labelView.font = font
         textField.placeholder = placeholderText
         textField.isSecureTextEntry = isSecured
         visibilityToggleButton.isHidden = !hasPasswordVisibility
-        
         if hasPasswordVisibility {
             setupPasswordVisibilityToggle()
         }
-        
         updateStackView()
     }
     
@@ -110,6 +116,7 @@ final class ReusableLabelAndTextFieldView: UIView {
         
         addSubview(labelView)
         addSubview(stackView)
+        addSubview(errorLabel)
         
         setupConstraints()
     }
@@ -122,11 +129,15 @@ final class ReusableLabelAndTextFieldView: UIView {
             stackView.topAnchor.constraint(equalTo: labelView.bottomAnchor, constant: 8),
             stackView.leadingAnchor.constraint(equalTo: leadingAnchor),
             stackView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: bottomAnchor),
             stackView.heightAnchor.constraint(equalToConstant: 52),
             
             visibilityToggleButton.heightAnchor.constraint(equalToConstant: 24),
-            visibilityToggleButton.widthAnchor.constraint(equalToConstant: 24)
+            visibilityToggleButton.widthAnchor.constraint(equalToConstant: 24),
+            
+            errorLabel.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 4),
+            errorLabel.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
+            errorLabel.trailingAnchor.constraint(equalTo: stackView.trailingAnchor),
+            errorLabel.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor)
         ])
     }
     
@@ -144,9 +155,19 @@ final class ReusableLabelAndTextFieldView: UIView {
     
     private func updateStackView() {
         stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        
         stackView.addArrangedSubview(textField)
-        
         stackView.addArrangedSubview(visibilityToggleButton)
+    }
+    
+    func setError(_ message: String?) {
+        if let message = message, !message.isEmpty {
+            errorLabel.text = message
+            errorLabel.isHidden = false
+            stackView.layer.borderColor = UIColor.burgundyRed.cgColor
+        } else {
+            errorLabel.text = nil
+            errorLabel.isHidden = true
+            stackView.layer.borderColor = UIColor.deepBlue.cgColor
+        }
     }
 }
