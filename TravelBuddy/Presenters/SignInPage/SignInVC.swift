@@ -289,7 +289,7 @@ final class SignInVC: UIViewController {
         
         Auth.auth().signIn(withEmail: email, password: password) { [weak self] authResult, error in
             if let error = error {
-                self?.showAlert(message: "Sign-In Error: \(error.localizedDescription)")
+                self?.showAlert(message: "Sign-in failed. Please check if your email and password are correct, or if your account is active.")
                 return
             }
             

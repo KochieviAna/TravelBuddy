@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 final class ForgotPasswordVC: UIViewController {
     
@@ -134,7 +135,65 @@ final class ForgotPasswordVC: UIViewController {
         navigationController?.popViewController(animated: true)
     }
     
-    private func handleNextButton() {        
-        navigationController?.pushViewController(EmailSentVC(), animated: true)
+    private func handleNextButton() {
+        emailInputView.setError(nil)
+        
+        guard let email = emailInputView.text, !email.isEmpty, isValidEmail(email) else {
+            emailInputView.setError("Please enter a valid email address.")
+            return
+        }
+        
+        showLoadingIndicator(true)
+        
+        Auth.auth().sendPasswordReset(withEmail: email) { [weak self] error in
+            self?.showLoadingIndicator(false)
+            
+            if let error = error {
+                self?.showAlert(message: "Error: \(error.localizedDescription)")
+                return
+            }
+            
+            self?.navigateToEmailSentScreen(email: email)
+        }
+    }
+    
+    private func isValidEmail(_ email: String) -> Bool {
+        let emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}$"
+        return NSPredicate(format: "SELF MATCHES %@", emailRegex).evaluate(with: email)
+    }
+    
+    private func navigateToEmailSentScreen(email: String) {
+        let emailSentVC = EmailSentVC()
+        emailSentVC.email = email
+        navigationController?.pushViewController(emailSentVC, animated: true)
+    }
+    
+    private var activityIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .large)
+        indicator.hidesWhenStopped = true
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        return indicator
+    }()
+    
+    private func showLoadingIndicator(_ show: Bool) {
+        if show {
+            view.addSubview(activityIndicator)
+            NSLayoutConstraint.activate([
+                activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            ])
+            activityIndicator.startAnimating()
+        } else {
+            activityIndicator.stopAnimating()
+            activityIndicator.removeFromSuperview()
+        }
+    }
+    
+    private func showAlert(message: String, completion: (() -> Void)? = nil) {
+        let alert = UIAlertController(title: "TravelBuddy", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+            completion?()
+        })
+        present(alert, animated: true)
     }
 }

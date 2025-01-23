@@ -48,14 +48,10 @@ final class EmailSentVC: UIViewController {
     private lazy var noteLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = """
-        Please be informed that the email regarding password reset has been sent to Email@outlook.com. Kindly check your inbox and follow the instructions.
-        """
         label.font = .robotoLight(size: 16)
         label.textColor = .deepBlue
         label.textAlignment = .left
         label.numberOfLines = 0
-        
         return label
     }()
     
@@ -67,6 +63,15 @@ final class EmailSentVC: UIViewController {
             }
         )
     }()
+    
+    var email: String?
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        noteLabel.text = """
+        Please be informed that the email regarding password reset has been sent to \(email ?? "your email address"). Kindly check your inbox and follow the instructions.
+        """
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -122,6 +127,6 @@ final class EmailSentVC: UIViewController {
     }
     
     private func handleBackToSignInButton() {
-        navigationController?.pushViewController(NewPasswordVC(), animated: true)
+        navigationController?.popToRootViewController(animated: true)
     }
 }
