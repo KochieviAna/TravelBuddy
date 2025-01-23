@@ -90,10 +90,12 @@ final class SignUpVC: UIViewController {
     }()
     
     private let dataBase = Firestore.firestore()
+    private let viewModel = SignUpViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setupBindings()
     }
     
     private func setupUI() {
@@ -158,60 +160,27 @@ final class SignUpVC: UIViewController {
         navigationController?.popViewController(animated: true)
     }
     
+    private func setupBindings() {
+        viewModel.onValidationError = { [weak self] message in
+            self?.showAlert(message: message)
+        }
+        viewModel.onSignUpError = { [weak self] message in
+            self?.showAlert(message: message)
+        }
+        viewModel.onSignUpSuccess = { [weak self] in
+            self?.showAlert(message: "Sign-Up Successful!") {
+                self?.navigationController?.popViewController(animated: true)
+            }
+        }
+    }
+    
     private func handleSignUp() {
-        fullNameInputView.setError(nil)
-        emailInputView.setError(nil)
-        passwordInputView.setError(nil)
-        confirmPasswordInputView.setError(nil)
-        
-        guard let fullName = fullNameInputView.text, !fullName.isEmpty else {
-            fullNameInputView.setError("Full name is required.")
-            return
-        }
-        guard let email = emailInputView.text, !email.isEmpty, isValidEmail(email) else {
-            emailInputView.setError("Enter a valid email address.")
-            return
-        }
-        
-        guard let password = passwordInputView.text, !password.isEmpty else {
-            passwordInputView.setError("Password is required.")
-            return
-        }
-        
-        guard password.count >= 6 else {
-            passwordInputView.setError("Password must be at least 6 characters.")
-            return
-        }
-        
-        guard let confirmPassword = confirmPasswordInputView.text, confirmPassword == password else {
-            confirmPasswordInputView.setError("Passwords do not match.")
-            return
-        }
-        
-        guard password == confirmPassword else {
-            showAlert(message: "Passwords do not match.")
-            return
-        }
-        
-        Auth.auth().createUser(withEmail: email, password: password) { [weak self] authResult, error in
-            if let error = error {
-                self?.showAlert(message: "Sign-Up Error: \(error.localizedDescription)")
-                return
-            }
-            
-            guard let self = self, let user = authResult?.user else { return }
-            
-            let changeRequest = user.createProfileChangeRequest()
-            changeRequest.displayName = fullName
-            changeRequest.commitChanges { error in
-                if let error = error {
-                    self.showAlert(message: "Error updating profile: \(error.localizedDescription)")
-                    return
-                }
-                
-                self.saveUserToFirestore(userId: user.uid, fullName: fullName, email: email)
-            }
-        }
+        viewModel.signUp(
+            fullName: fullNameInputView.text,
+            email: emailInputView.text,
+            password: passwordInputView.text,
+            confirmPassword: confirmPasswordInputView.text
+        )
     }
     
     private func saveUserToFirestore(userId: String, fullName: String, email: String) {
@@ -239,10 +208,5 @@ final class SignUpVC: UIViewController {
             completion?()
         })
         present(alert, animated: true)
-    }
-    
-    private func isValidEmail(_ email: String) -> Bool {
-        let emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}$"
-        return NSPredicate(format: "SELF MATCHES %@", emailRegex).evaluate(with: email)
     }
 }

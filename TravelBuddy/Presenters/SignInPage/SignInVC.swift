@@ -187,9 +187,12 @@ final class SignInVC: UIViewController {
         return button
     }()
     
+    private let viewModel = SignInViewModel()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setupBindings()
     }
     
     private func setupUI() {
@@ -274,32 +277,22 @@ final class SignInVC: UIViewController {
         navigationController?.pushViewController(ForgotPasswordVC(), animated: true)
     }
     
+    private func setupBindings() {
+        viewModel.onValidationError = { [weak self] message in
+            self?.showAlert(message: message)
+        }
+        viewModel.onSignInError = { [weak self] message in
+            self?.showAlert(message: message)
+        }
+        viewModel.onSignInSuccess = { [weak self] in
+            if let sceneDelegate = self?.view.window?.windowScene?.delegate as? SceneDelegate {
+                sceneDelegate.switchToTabBarController()
+            }
+        }
+    }
+    
     private func handleSignIn() {
-        emailInputView.setError(nil)
-        passwordInputView.setError(nil)
-        
-        guard let email = emailInputView.text, !email.isEmpty, isValidEmail(email) else {
-            emailInputView.setError("Enter a valid email address.")
-            return
-        }
-        guard let password = passwordInputView.text, !password.isEmpty else {
-            passwordInputView.setError("Password is required.")
-            return
-        }
-        
-        Auth.auth().signIn(withEmail: email, password: password) { [weak self] authResult, error in
-            if let error = error {
-                self?.showAlert(message: "Sign-in failed. Please check if your email and password are correct, or if your account is active.")
-                return
-            }
-            
-            if let user = authResult?.user {
-                print("User signed in: \(user.email ?? "No Email")")
-                if let sceneDelegate = self?.view.window?.windowScene?.delegate as? SceneDelegate {
-                    sceneDelegate.switchToTabBarController()
-                }
-            }
-        }
+        viewModel.signIn(email: emailInputView.text, password: passwordInputView.text)
     }
     
     private func handleGoogleSignIn() {
@@ -324,10 +317,5 @@ final class SignInVC: UIViewController {
             completion?()
         })
         present(alert, animated: true)
-    }
-    
-    private func isValidEmail(_ email: String) -> Bool {
-        let emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}$"
-        return NSPredicate(format: "SELF MATCHES %@", emailRegex).evaluate(with: email)
     }
 }

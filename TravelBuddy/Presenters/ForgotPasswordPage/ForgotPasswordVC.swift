@@ -77,6 +77,8 @@ final class ForgotPasswordVC: UIViewController {
         )
     }()
     
+    private let viewModel = ForgotPasswordViewModel()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -135,31 +137,20 @@ final class ForgotPasswordVC: UIViewController {
         navigationController?.popViewController(animated: true)
     }
     
-    private func handleNextButton() {
-        emailInputView.setError(nil)
-        
-        guard let email = emailInputView.text, !email.isEmpty, isValidEmail(email) else {
-            emailInputView.setError("Please enter a valid email address.")
-            return
+    private func setupBindings() {
+        viewModel.onValidationError = { [weak self] message in
+            self?.showAlert(message: message)
         }
-        
-        showLoadingIndicator(true)
-        
-        Auth.auth().sendPasswordReset(withEmail: email) { [weak self] error in
-            self?.showLoadingIndicator(false)
-            
-            if let error = error {
-                self?.showAlert(message: "Error: \(error.localizedDescription)")
-                return
-            }
-            
-            self?.navigateToEmailSentScreen(email: email)
+        viewModel.onPasswordResetError = { [weak self] message in
+            self?.showAlert(message: message)
+        }
+        viewModel.onPasswordResetSuccess = { [weak self] in
+            self?.navigateToEmailSentScreen(email: self?.emailInputView.text ?? "")
         }
     }
     
-    private func isValidEmail(_ email: String) -> Bool {
-        let emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}$"
-        return NSPredicate(format: "SELF MATCHES %@", emailRegex).evaluate(with: email)
+    private func handleNextButton() {
+        viewModel.sendPasswordReset(email: emailInputView.text)
     }
     
     private func navigateToEmailSentScreen(email: String) {
