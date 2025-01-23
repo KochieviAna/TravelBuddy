@@ -27,7 +27,7 @@ final class SignInVC: UIViewController {
     private lazy var signInLabel: UILabel = {
         let label = UILabel()
         label.text = "Sign In"
-        label.font = .robotoBold(size: UIScreen.main.bounds.height < 700 ? 24 : 30)
+        label.font = .robotoBold(size: 30)
         label.textAlignment = .right
         label.textColor = UIColor.deepBlue
         
@@ -108,16 +108,61 @@ final class SignInVC: UIViewController {
     
     private lazy var separatorView = SeparatorView()
     
-    private lazy var googleSignInButton: GoogleSignInButton = {
-        return GoogleSignInButton { [weak self] in
-            self?.handleGoogleSignIn()
+    private lazy var googleSignInButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle(" Sign in with Google", for: .normal)
+        button.setTitleColor(.deepBlue.withAlphaComponent(0.5), for: .normal)
+        button.titleLabel?.font = .robotoMedium(size: 20)
+        button.backgroundColor = .primaryWhite
+        button.layer.cornerRadius = 20
+        button.clipsToBounds = false
+        
+        if let googleIcon = UIImage(named: "google")?.withRenderingMode(.alwaysOriginal) {
+            button.setImage(googleIcon, for: .normal)
+        } else {
+            print("Google icon not found in assets")
         }
+        
+        button.imageView?.contentMode = .scaleAspectFit
+        
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOpacity = 0.2
+        button.layer.shadowOffset = CGSize(width: 0, height: 4)
+        button.layer.shadowRadius = 3
+        
+        button.addAction(UIAction(handler: { [weak self] _ in
+            self?.handleGoogleSignIn()
+        }), for: .touchUpInside)
+        
+        return button
     }()
     
-    private lazy var appleSignInButton: AppleSignInButton = {
-        return AppleSignInButton { [weak self] in
+    private lazy var appleSignInButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle(" Sign in with Apple", for: .normal)
+        button.setTitleColor(.primaryWhite, for: .normal)
+        button.titleLabel?.font = .robotoMedium(size: 20)
+        button.backgroundColor = .black
+        button.layer.cornerRadius = 20
+        button.clipsToBounds = false
+        
+        let appleIcon = UIImage(systemName: "applelogo")
+        button.setImage(appleIcon, for: .normal)
+        button.imageView?.contentMode = .scaleAspectFit
+        button.tintColor = .primaryWhite
+        
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOpacity = 0.2
+        button.layer.shadowOffset = CGSize(width: 0, height: 4)
+        button.layer.shadowRadius = 3
+        
+        button.addAction(UIAction(handler: { [weak self] _ in
             self?.handleAppleSignIn()
-        }
+        }), for: .touchUpInside)
+        
+        return button
     }()
     
     private lazy var guestSeparatorView = SeparatorView()
@@ -161,8 +206,6 @@ final class SignInVC: UIViewController {
     }
     
     private func setupConstraints() {
-        let verticalSpacing: CGFloat = UIScreen.main.bounds.height < 700 ? 16 : 24
-        
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -172,52 +215,53 @@ final class SignInVC: UIViewController {
             contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            contentView.bottomAnchor.constraint(equalTo: continueAsGuestButton.bottomAnchor, constant: 24),
             
-            signInLabel.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: verticalSpacing * 2),
+            signInLabel.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant:60),
             signInLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             
-            joinStackView.topAnchor.constraint(equalTo: signInLabel.bottomAnchor, constant: verticalSpacing),
+            joinStackView.topAnchor.constraint(equalTo: signInLabel.bottomAnchor, constant: 5),
             joinStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             
-            emailInputView.topAnchor.constraint(equalTo: joinStackView.bottomAnchor, constant: verticalSpacing * 1.5),
+            emailInputView.topAnchor.constraint(equalTo: joinStackView.bottomAnchor, constant: 25),
             emailInputView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             emailInputView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             
-            passwordInputView.topAnchor.constraint(equalTo: emailInputView.bottomAnchor, constant: verticalSpacing),
+            passwordInputView.topAnchor.constraint(equalTo: emailInputView.bottomAnchor, constant: 18),
             passwordInputView.leadingAnchor.constraint(equalTo: emailInputView.leadingAnchor),
             passwordInputView.trailingAnchor.constraint(equalTo: emailInputView.trailingAnchor),
             
-            signInButton.topAnchor.constraint(equalTo: passwordInputView.bottomAnchor, constant: verticalSpacing * 1.5),
+            signInButton.topAnchor.constraint(equalTo: passwordInputView.bottomAnchor, constant: 18),
             signInButton.leadingAnchor.constraint(equalTo: passwordInputView.leadingAnchor),
             signInButton.trailingAnchor.constraint(equalTo: passwordInputView.trailingAnchor),
             
-            forgotPasswordButton.topAnchor.constraint(equalTo: signInButton.bottomAnchor, constant: verticalSpacing),
+            forgotPasswordButton.topAnchor.constraint(equalTo: signInButton.bottomAnchor, constant: 18),
             forgotPasswordButton.leadingAnchor.constraint(equalTo: signInButton.leadingAnchor),
             
-            separatorView.topAnchor.constraint(equalTo: forgotPasswordButton.bottomAnchor, constant: verticalSpacing),
+            separatorView.topAnchor.constraint(equalTo: forgotPasswordButton.bottomAnchor, constant: 25),
             separatorView.leadingAnchor.constraint(equalTo: signInButton.leadingAnchor),
             separatorView.trailingAnchor.constraint(equalTo: signInButton.trailingAnchor),
             
-            googleSignInButton.topAnchor.constraint(equalTo: separatorView.bottomAnchor, constant: verticalSpacing * 1.5),
+            googleSignInButton.topAnchor.constraint(equalTo: separatorView.bottomAnchor, constant: 25),
             googleSignInButton.leadingAnchor.constraint(equalTo: separatorView.leadingAnchor),
             googleSignInButton.trailingAnchor.constraint(equalTo: separatorView.trailingAnchor),
+            googleSignInButton.heightAnchor.constraint(equalToConstant: 48),
             
-            appleSignInButton.topAnchor.constraint(equalTo: googleSignInButton.bottomAnchor, constant: verticalSpacing),
+            appleSignInButton.topAnchor.constraint(equalTo: googleSignInButton.bottomAnchor, constant: 18),
             appleSignInButton.leadingAnchor.constraint(equalTo: googleSignInButton.leadingAnchor),
             appleSignInButton.trailingAnchor.constraint(equalTo: googleSignInButton.trailingAnchor),
+            appleSignInButton.heightAnchor.constraint(equalToConstant: 48),
             
-            guestSeparatorView.topAnchor.constraint(equalTo: appleSignInButton.bottomAnchor, constant: verticalSpacing * 1.5),
+            guestSeparatorView.topAnchor.constraint(equalTo: appleSignInButton.bottomAnchor, constant: 25),
             guestSeparatorView.leadingAnchor.constraint(equalTo: appleSignInButton.leadingAnchor),
             guestSeparatorView.trailingAnchor.constraint(equalTo: appleSignInButton.trailingAnchor),
             
-            continueAsGuestButton.topAnchor.constraint(equalTo: guestSeparatorView.bottomAnchor, constant: verticalSpacing),
+            continueAsGuestButton.topAnchor.constraint(equalTo: guestSeparatorView.bottomAnchor, constant: 25),
             continueAsGuestButton.leadingAnchor.constraint(equalTo: guestSeparatorView.leadingAnchor),
             continueAsGuestButton.trailingAnchor.constraint(equalTo: guestSeparatorView.trailingAnchor),
             continueAsGuestButton.heightAnchor.constraint(equalToConstant: 50),
             continueAsGuestButton.heightAnchor.constraint(equalToConstant: 48),
-            continueAsGuestButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -verticalSpacing * 2)
         ])
     }
     

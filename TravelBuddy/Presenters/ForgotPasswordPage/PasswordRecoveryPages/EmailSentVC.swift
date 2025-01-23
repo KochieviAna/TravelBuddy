@@ -38,7 +38,7 @@ final class EmailSentVC: UIViewController {
     private lazy var emailSentLabel: UILabel = {
         let label = UILabel()
         label.text = "Email Sent"
-        label.font = .robotoBold(size: UIScreen.main.bounds.height < 700 ? 24 : 30)
+        label.font = .robotoBold(size: 30)
         label.textAlignment = .right
         label.textColor = UIColor.deepBlue
         
@@ -87,8 +87,6 @@ final class EmailSentVC: UIViewController {
     }
     
     private func setupConstraints() {
-        let verticalSpacing: CGFloat = UIScreen.main.bounds.height < 700 ? 16 : 24
-        
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -98,25 +96,24 @@ final class EmailSentVC: UIViewController {
             contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            contentView.bottomAnchor.constraint(equalTo: backToSignInButton.bottomAnchor, constant: 24),
             
-            backButton.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: verticalSpacing),
+            backButton.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 16),
             backButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             backButton.heightAnchor.constraint(equalToConstant: 24),
             backButton.widthAnchor.constraint(equalToConstant: 24),
             
-            emailSentLabel.topAnchor.constraint(equalTo: backButton.bottomAnchor, constant: verticalSpacing),
+            emailSentLabel.topAnchor.constraint(equalTo: backButton.bottomAnchor, constant: 25),
             emailSentLabel.leadingAnchor.constraint(equalTo: backButton.leadingAnchor),
             
-            noteLabel.topAnchor.constraint(equalTo: emailSentLabel.bottomAnchor, constant: verticalSpacing),
+            noteLabel.topAnchor.constraint(equalTo: emailSentLabel.bottomAnchor, constant: 25),
             noteLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             noteLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             
-            backToSignInButton.topAnchor.constraint(equalTo: noteLabel.bottomAnchor, constant: verticalSpacing * 2),
+            backToSignInButton.topAnchor.constraint(equalTo: noteLabel.bottomAnchor, constant: 25),
             backToSignInButton.leadingAnchor.constraint(equalTo: noteLabel.leadingAnchor),
             backToSignInButton.trailingAnchor.constraint(equalTo: noteLabel.trailingAnchor),
-            backToSignInButton.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -verticalSpacing * 2)
         ])
     }
     

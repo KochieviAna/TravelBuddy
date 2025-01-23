@@ -27,7 +27,7 @@ final class NewPasswordVC: UIViewController {
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Create New Password"
-        label.font = .robotoBold(size: UIScreen.main.bounds.height < 700 ? 24 : 30)
+        label.font = .robotoBold(size: 30)
         label.textAlignment = .right
         label.textColor = UIColor.deepBlue
         
@@ -82,8 +82,6 @@ final class NewPasswordVC: UIViewController {
     }
     
     private func setupConstraints() {
-        let verticalSpacing: CGFloat = UIScreen.main.bounds.height < 700 ? 16 : 24
-        
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -93,24 +91,23 @@ final class NewPasswordVC: UIViewController {
             contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            contentView.bottomAnchor.constraint(equalTo: doneButton.bottomAnchor, constant: 24),
             
-            titleLabel.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: verticalSpacing * 2),
+            titleLabel.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 70),
             titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             
-            newPasswordInputView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: verticalSpacing * 2),
+            newPasswordInputView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 25),
             newPasswordInputView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             newPasswordInputView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             
-            confirmPasswordInputView.topAnchor.constraint(equalTo: newPasswordInputView.bottomAnchor, constant: verticalSpacing),
+            confirmPasswordInputView.topAnchor.constraint(equalTo: newPasswordInputView.bottomAnchor, constant: 18),
             confirmPasswordInputView.leadingAnchor.constraint(equalTo: newPasswordInputView.leadingAnchor),
             confirmPasswordInputView.trailingAnchor.constraint(equalTo: newPasswordInputView.trailingAnchor),
             
-            doneButton.topAnchor.constraint(equalTo: confirmPasswordInputView.bottomAnchor, constant: verticalSpacing * 2),
+            doneButton.topAnchor.constraint(equalTo: confirmPasswordInputView.bottomAnchor, constant: 18),
             doneButton.leadingAnchor.constraint(equalTo: confirmPasswordInputView.leadingAnchor),
             doneButton.trailingAnchor.constraint(equalTo: confirmPasswordInputView.trailingAnchor),
-            doneButton.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -verticalSpacing * 2)
         ])
     }
     

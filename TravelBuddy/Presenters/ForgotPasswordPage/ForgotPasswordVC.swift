@@ -38,7 +38,7 @@ final class ForgotPasswordVC: UIViewController {
     private lazy var forgotPasswordLabel: UILabel = {
         let label = UILabel()
         label.text = "Forgot Password"
-        label.font = .robotoBold(size: UIScreen.main.bounds.height < 700 ? 24 : 30)
+        label.font = .robotoBold(size: 30)
         label.textAlignment = .right
         label.textColor = UIColor.deepBlue
         
@@ -96,8 +96,6 @@ final class ForgotPasswordVC: UIViewController {
     }
     
     private func setupConstraints() {
-        let verticalSpacing: CGFloat = UIScreen.main.bounds.height < 700 ? 16 : 24
-        
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -107,29 +105,28 @@ final class ForgotPasswordVC: UIViewController {
             contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            contentView.bottomAnchor.constraint(equalTo: nextButton.bottomAnchor, constant: 24),
             
-            backButton.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: verticalSpacing),
+            backButton.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 16),
             backButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             backButton.heightAnchor.constraint(equalToConstant: 24),
             backButton.widthAnchor.constraint(equalToConstant: 24),
             
-            forgotPasswordLabel.topAnchor.constraint(equalTo: backButton.bottomAnchor, constant: verticalSpacing),
+            forgotPasswordLabel.topAnchor.constraint(equalTo: backButton.bottomAnchor, constant: 25),
             forgotPasswordLabel.leadingAnchor.constraint(equalTo: backButton.leadingAnchor),
             
-            noteLabel.topAnchor.constraint(equalTo: forgotPasswordLabel.bottomAnchor, constant: verticalSpacing),
+            noteLabel.topAnchor.constraint(equalTo: forgotPasswordLabel.bottomAnchor, constant: 25),
             noteLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             noteLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             
-            emailInputView.topAnchor.constraint(equalTo: noteLabel.bottomAnchor, constant: verticalSpacing),
+            emailInputView.topAnchor.constraint(equalTo: noteLabel.bottomAnchor, constant: 25),
             emailInputView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             emailInputView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             
-            nextButton.topAnchor.constraint(equalTo: emailInputView.bottomAnchor, constant: verticalSpacing * 2),
+            nextButton.topAnchor.constraint(equalTo: emailInputView.bottomAnchor, constant: 18),
             nextButton.leadingAnchor.constraint(equalTo: emailInputView.leadingAnchor),
             nextButton.trailingAnchor.constraint(equalTo: emailInputView.trailingAnchor),
-            nextButton.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -verticalSpacing * 2)
         ])
     }
     
