@@ -45,10 +45,10 @@ final class IntroductionVC: UIViewController {
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            introductionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            introductionView.topAnchor.constraint(equalTo: view.topAnchor),
             introductionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             introductionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            introductionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+            introductionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
     

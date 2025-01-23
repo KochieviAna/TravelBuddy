@@ -279,10 +279,10 @@ final class SignInVC: UIViewController {
     
     private func setupBindings() {
         viewModel.onValidationError = { [weak self] message in
-            self?.showAlert(message: message)
+            self?.handleValidationError(message: message)
         }
         viewModel.onSignInError = { [weak self] message in
-            self?.showAlert(message: message)
+            self?.setError(for: nil, message: message)
         }
         viewModel.onSignInSuccess = { [weak self] in
             if let sceneDelegate = self?.view.window?.windowScene?.delegate as? SceneDelegate {
@@ -292,7 +292,25 @@ final class SignInVC: UIViewController {
     }
     
     private func handleSignIn() {
+        clearErrors()
         viewModel.signIn(email: emailInputView.text, password: passwordInputView.text)
+    }
+    
+    private func handleValidationError(message: String) {
+        if message.contains("email") {
+            setError(for: emailInputView, message: message)
+        } else if message.contains("Password") {
+            setError(for: passwordInputView, message: message)
+        }
+    }
+    
+    private func setError(for inputView: ReusableLabelAndTextFieldView?, message: String) {
+        inputView?.setError(message)
+    }
+    
+    private func clearErrors() {
+        emailInputView.setError(nil)
+        passwordInputView.setError(nil)
     }
     
     private func handleGoogleSignIn() {
@@ -309,13 +327,5 @@ final class SignInVC: UIViewController {
         if let sceneDelegate = view.window?.windowScene?.delegate as? SceneDelegate {
             sceneDelegate.switchToTabBarController()
         }
-    }
-    
-    private func showAlert(message: String, completion: (() -> Void)? = nil) {
-        let alert = UIAlertController(title: "TravelBuddy", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
-            completion?()
-        })
-        present(alert, animated: true)
     }
 }

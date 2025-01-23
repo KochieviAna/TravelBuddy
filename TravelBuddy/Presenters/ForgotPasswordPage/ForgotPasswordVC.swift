@@ -14,14 +14,12 @@ final class ForgotPasswordVC: UIViewController {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.alwaysBounceVertical = true
-        
         return scrollView
     }()
     
     private lazy var contentView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        
         return view
     }()
     
@@ -32,7 +30,6 @@ final class ForgotPasswordVC: UIViewController {
         button.addAction(UIAction(handler: { [weak self] _ in
             self?.handleBackButton()
         }), for: .touchUpInside)
-        
         return button
     }()
     
@@ -42,7 +39,6 @@ final class ForgotPasswordVC: UIViewController {
         label.font = .robotoBold(size: 30)
         label.textAlignment = .right
         label.textColor = UIColor.deepBlue
-        
         return label
     }()
     
@@ -54,7 +50,6 @@ final class ForgotPasswordVC: UIViewController {
         label.textAlignment = .left
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
-        
         return label
     }()
     
@@ -81,8 +76,8 @@ final class ForgotPasswordVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupUI()
+        setupBindings()
     }
     
     private func setupUI() {
@@ -133,16 +128,12 @@ final class ForgotPasswordVC: UIViewController {
         ])
     }
     
-    private func handleBackButton() {
-        navigationController?.popViewController(animated: true)
-    }
-    
     private func setupBindings() {
         viewModel.onValidationError = { [weak self] message in
-            self?.showAlert(message: message)
+            self?.handleValidationError(message: message)
         }
         viewModel.onPasswordResetError = { [weak self] message in
-            self?.showAlert(message: message)
+            self?.setError(for: nil, message: message)
         }
         viewModel.onPasswordResetSuccess = { [weak self] in
             self?.navigateToEmailSentScreen(email: self?.emailInputView.text ?? "")
@@ -150,41 +141,31 @@ final class ForgotPasswordVC: UIViewController {
     }
     
     private func handleNextButton() {
+        clearErrors()
         viewModel.sendPasswordReset(email: emailInputView.text)
+    }
+    
+    private func handleValidationError(message: String) {
+        if message.contains("email") {
+            setError(for: emailInputView, message: message)
+        }
+    }
+    
+    private func setError(for inputView: ReusableLabelAndTextFieldView?, message: String) {
+        inputView?.setError(message)
+    }
+    
+    private func clearErrors() {
+        emailInputView.setError(nil)
+    }
+    
+    private func handleBackButton() {
+        navigationController?.popViewController(animated: true)
     }
     
     private func navigateToEmailSentScreen(email: String) {
         let emailSentVC = EmailSentVC()
         emailSentVC.email = email
         navigationController?.pushViewController(emailSentVC, animated: true)
-    }
-    
-    private var activityIndicator: UIActivityIndicatorView = {
-        let indicator = UIActivityIndicatorView(style: .large)
-        indicator.hidesWhenStopped = true
-        indicator.translatesAutoresizingMaskIntoConstraints = false
-        return indicator
-    }()
-    
-    private func showLoadingIndicator(_ show: Bool) {
-        if show {
-            view.addSubview(activityIndicator)
-            NSLayoutConstraint.activate([
-                activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-                activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-            ])
-            activityIndicator.startAnimating()
-        } else {
-            activityIndicator.stopAnimating()
-            activityIndicator.removeFromSuperview()
-        }
-    }
-    
-    private func showAlert(message: String, completion: (() -> Void)? = nil) {
-        let alert = UIAlertController(title: "TravelBuddy", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
-            completion?()
-        })
-        present(alert, animated: true)
     }
 }

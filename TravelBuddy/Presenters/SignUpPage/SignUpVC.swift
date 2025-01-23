@@ -26,7 +26,7 @@ final class SignUpVC: UIViewController {
     
     private lazy var backButton: ReusableBackButton = {
         return ReusableBackButton { [weak self] in
-            self?.handleBackButton()
+            self?.navigationController?.popViewController(animated: true)
         }
     }()
     
@@ -89,7 +89,6 @@ final class SignUpVC: UIViewController {
         )
     }()
     
-    private let dataBase = Firestore.firestore()
     private let viewModel = SignUpViewModel()
     
     override func viewDidLoad() {
@@ -155,26 +154,23 @@ final class SignUpVC: UIViewController {
         ])
     }
     
-    private func handleBackButton() {
-        print("Back button tapped")
-        navigationController?.popViewController(animated: true)
-    }
-    
     private func setupBindings() {
         viewModel.onValidationError = { [weak self] message in
-            self?.showAlert(message: message)
+            self?.handleValidationError(message: message)
         }
+        
         viewModel.onSignUpError = { [weak self] message in
-            self?.showAlert(message: message)
+            self?.setError(for: nil, message: message)
         }
+        
         viewModel.onSignUpSuccess = { [weak self] in
-            self?.showAlert(message: "Sign-Up Successful!") {
-                self?.navigationController?.popViewController(animated: true)
-            }
+            self?.clearErrors()
+            self?.showSuccessMessage()
         }
     }
     
     private func handleSignUp() {
+        clearErrors()
         viewModel.signUp(
             fullName: fullNameInputView.text,
             email: emailInputView.text,
@@ -183,30 +179,30 @@ final class SignUpVC: UIViewController {
         )
     }
     
-    private func saveUserToFirestore(userId: String, fullName: String, email: String) {
-        let userData: [String: Any] = [
-            "fullName": fullName,
-            "email": email,
-            "createdAt": Timestamp(date: Date())
-        ]
-        
-        dataBase.collection("users").document(userId).setData(userData) { [weak self] error in
-            if let error = error {
-                self?.showAlert(message: "Error saving user data: \(error.localizedDescription)")
-                return
-            }
-            
-            self?.showAlert(message: "Sign-Up Successful! Welcome, \(fullName)") {
-                self?.navigationController?.popViewController(animated: true)
-            }
+    private func handleValidationError(message: String) {
+        if message.contains("Full name") {
+            setError(for: fullNameInputView, message: message)
+        } else if message.contains("email") {
+            setError(for: emailInputView, message: message)
+        } else if message.contains("Password") && !message.contains("match") {
+            setError(for: passwordInputView, message: message)
+        } else if message.contains("match") {
+            setError(for: confirmPasswordInputView, message: message)
         }
     }
     
-    private func showAlert(message: String, completion: (() -> Void)? = nil) {
-        let alert = UIAlertController(title: "TravelBuddy", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
-            completion?()
-        })
-        present(alert, animated: true)
+    private func setError(for inputView: ReusableLabelAndTextFieldView?, message: String) {
+        inputView?.setError(message)
+    }
+    
+    private func clearErrors() {
+        fullNameInputView.setError(nil)
+        emailInputView.setError(nil)
+        passwordInputView.setError(nil)
+        confirmPasswordInputView.setError(nil)
+    }
+    
+    private func showSuccessMessage() {
+        navigationController?.popViewController(animated: true)
     }
 }
