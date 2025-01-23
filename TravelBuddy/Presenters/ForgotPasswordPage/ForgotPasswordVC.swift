@@ -14,13 +14,24 @@ final class ForgotPasswordVC: UIViewController {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.alwaysBounceVertical = true
+        
         return scrollView
     }()
     
     private lazy var contentView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
+        
         return view
+    }()
+    
+    private lazy var activityIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .large)
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.color = .deepBlue
+        indicator.hidesWhenStopped = true
+        
+        return indicator
     }()
     
     private lazy var backButton: UIButton = {
@@ -30,6 +41,7 @@ final class ForgotPasswordVC: UIViewController {
         button.addAction(UIAction(handler: { [weak self] _ in
             self?.handleBackButton()
         }), for: .touchUpInside)
+        
         return button
     }()
     
@@ -39,6 +51,7 @@ final class ForgotPasswordVC: UIViewController {
         label.font = .robotoBold(size: 30)
         label.textAlignment = .right
         label.textColor = UIColor.deepBlue
+        
         return label
     }()
     
@@ -50,6 +63,7 @@ final class ForgotPasswordVC: UIViewController {
         label.textAlignment = .left
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
+        
         return label
     }()
     
@@ -84,6 +98,7 @@ final class ForgotPasswordVC: UIViewController {
         view.backgroundColor = .systemBackground
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
+        view.addSubview(activityIndicator)
         
         [backButton, forgotPasswordLabel, noteLabel, emailInputView, nextButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
@@ -105,6 +120,9 @@ final class ForgotPasswordVC: UIViewController {
             contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             contentView.bottomAnchor.constraint(equalTo: nextButton.bottomAnchor, constant: 24),
+            
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             
             backButton.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 16),
             backButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
@@ -130,18 +148,22 @@ final class ForgotPasswordVC: UIViewController {
     
     private func setupBindings() {
         viewModel.onValidationError = { [weak self] message in
+            self?.hideActivityIndicator()
             self?.handleValidationError(message: message)
         }
         viewModel.onPasswordResetError = { [weak self] message in
+            self?.hideActivityIndicator()
             self?.setError(for: nil, message: message)
         }
         viewModel.onPasswordResetSuccess = { [weak self] in
+            self?.hideActivityIndicator()
             self?.navigateToEmailSentScreen(email: self?.emailInputView.text ?? "")
         }
     }
     
     private func handleNextButton() {
         clearErrors()
+        showActivityIndicator()
         viewModel.sendPasswordReset(email: emailInputView.text)
     }
     
@@ -167,5 +189,15 @@ final class ForgotPasswordVC: UIViewController {
         let emailSentVC = EmailSentVC()
         emailSentVC.email = email
         navigationController?.pushViewController(emailSentVC, animated: true)
+    }
+    
+    private func showActivityIndicator() {
+        activityIndicator.startAnimating()
+        view.isUserInteractionEnabled = false
+    }
+    
+    private func hideActivityIndicator() {
+        activityIndicator.stopAnimating()
+        view.isUserInteractionEnabled = true
     }
 }

@@ -25,6 +25,15 @@ final class SignInVC: UIViewController {
         return view
     }()
     
+    private lazy var activityIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .large)
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.color = .deepBlue
+        indicator.hidesWhenStopped = true
+        
+        return indicator
+    }()
+    
     private lazy var signInLabel: UILabel = {
         let label = UILabel()
         label.text = "Sign In"
@@ -199,6 +208,7 @@ final class SignInVC: UIViewController {
         view.backgroundColor = .systemBackground
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
+        view.addSubview(activityIndicator)
         
         [signInLabel, joinStackView, emailInputView, passwordInputView, forgotPasswordButton, signInButton, separatorView, googleSignInButton, appleSignInButton, guestSeparatorView, continueAsGuestButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
@@ -221,6 +231,9 @@ final class SignInVC: UIViewController {
             contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             contentView.bottomAnchor.constraint(equalTo: continueAsGuestButton.bottomAnchor, constant: 24),
+            
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             
             signInLabel.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 80),
             signInLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
@@ -279,12 +292,20 @@ final class SignInVC: UIViewController {
     
     private func setupBindings() {
         viewModel.onValidationError = { [weak self] message in
-            self?.handleValidationError(message: message)
+            guard let self = self else { return }
+            self.hideActivityIndicator()
+            self.handleValidationError(message: message)
         }
+        
         viewModel.onSignInError = { [weak self] message in
-            self?.setError(for: nil, message: message)
+            guard let self = self else { return }
+            self.hideActivityIndicator()
+            self.showAlert(title: "Sign-In Error", message: message)
+            self.setError(for: nil, message: message)
         }
+        
         viewModel.onSignInSuccess = { [weak self] in
+            self?.hideActivityIndicator()
             if let sceneDelegate = self?.view.window?.windowScene?.delegate as? SceneDelegate {
                 sceneDelegate.switchToTabBarController()
             }
@@ -293,6 +314,7 @@ final class SignInVC: UIViewController {
     
     private func handleSignIn() {
         clearErrors()
+        showActivityIndicator()
         viewModel.signIn(email: emailInputView.text, password: passwordInputView.text)
     }
     
@@ -327,5 +349,23 @@ final class SignInVC: UIViewController {
         if let sceneDelegate = view.window?.windowScene?.delegate as? SceneDelegate {
             sceneDelegate.switchToTabBarController()
         }
+    }
+    
+    private func showActivityIndicator() {
+        activityIndicator.startAnimating()
+        view.isUserInteractionEnabled = false
+    }
+    
+    private func hideActivityIndicator() {
+        activityIndicator.stopAnimating()
+        view.isUserInteractionEnabled = true
+    }
+    
+    private func showAlert(title: String, message: String, completion: (() -> Void)? = nil) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+            completion?()
+        }))
+        present(alert, animated: true, completion: nil)
     }
 }
