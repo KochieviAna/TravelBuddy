@@ -136,7 +136,6 @@ final class ForgotPasswordVC: UIViewController {
     
     private func handleNextButton() {
         let email = emailInputView.text
-        print("Send password reset to email: \(email)")
         
         navigationController?.pushViewController(EmailSentVC(), animated: true)
     }

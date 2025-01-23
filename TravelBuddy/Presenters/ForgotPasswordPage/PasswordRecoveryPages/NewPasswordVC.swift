@@ -119,9 +119,7 @@ final class NewPasswordVC: UIViewController {
             print("Passwords do not match!")
             return
         }
-        
-        print("New password set: \(newPassword)")
-        
+                
         navigationController?.popToRootViewController(animated: true)
     }
 }

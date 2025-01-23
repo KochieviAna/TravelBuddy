@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import FirebaseAuth
+import FirebaseFirestore
 
 final class SignUpVC: UIViewController {
     
@@ -87,6 +89,8 @@ final class SignUpVC: UIViewController {
         )
     }()
     
+    private let dataBase = Firestore.firestore()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -155,11 +159,73 @@ final class SignUpVC: UIViewController {
     }
     
     private func handleSignUp() {
-        print("Sign up initiated")
-        let fullName = fullNameInputView.text
-        let email = emailInputView.text
-        let password = passwordInputView.text
-        let confirmPassword = confirmPasswordInputView.text
-        print("Full Name: \(fullName), Email: \(email), Password: \(password), Confirm Password: \(confirmPassword)")
+        // Retrieve input values
+        guard let fullName = fullNameInputView.text, !fullName.isEmpty else {
+            showAlert(message: "Please enter your full name.")
+            return
+        }
+        guard let email = emailInputView.text, !email.isEmpty else {
+            showAlert(message: "Please enter your email.")
+            return
+        }
+        guard let password = passwordInputView.text, !password.isEmpty else {
+            showAlert(message: "Please enter a password.")
+            return
+        }
+        guard let confirmPassword = confirmPasswordInputView.text, !confirmPassword.isEmpty else {
+            showAlert(message: "Please confirm your password.")
+            return
+        }
+        guard password == confirmPassword else {
+            showAlert(message: "Passwords do not match.")
+            return
+        }
+        
+        Auth.auth().createUser(withEmail: email, password: password) { [weak self] authResult, error in
+            if let error = error {
+                self?.showAlert(message: "Sign-Up Error: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let self = self, let user = authResult?.user else { return }
+            
+            let changeRequest = user.createProfileChangeRequest()
+            changeRequest.displayName = fullName
+            changeRequest.commitChanges { error in
+                if let error = error {
+                    self.showAlert(message: "Error updating profile: \(error.localizedDescription)")
+                    return
+                }
+                
+                self.saveUserToFirestore(userId: user.uid, fullName: fullName, email: email)
+            }
+        }
+    }
+    
+    private func saveUserToFirestore(userId: String, fullName: String, email: String) {
+        let userData: [String: Any] = [
+            "fullName": fullName,
+            "email": email,
+            "createdAt": Timestamp(date: Date())
+        ]
+        
+        dataBase.collection("users").document(userId).setData(userData) { [weak self] error in
+            if let error = error {
+                self?.showAlert(message: "Error saving user data: \(error.localizedDescription)")
+                return
+            }
+            
+            self?.showAlert(message: "Sign-Up Successful! Welcome, \(fullName)") {
+                self?.navigationController?.popViewController(animated: true)
+            }
+        }
+    }
+    
+    private func showAlert(message: String, completion: (() -> Void)? = nil) {
+        let alert = UIAlertController(title: "TravelBuddy", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+            completion?()
+        })
+        present(alert, animated: true)
     }
 }

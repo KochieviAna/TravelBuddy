@@ -277,8 +277,6 @@ final class SignInVC: UIViewController {
         let email = emailInputView.text
         let password = passwordInputView.text
         
-        print("Email: \(email), Password: \(password)")
-        
         if email == "test@travelbuddy.com" && password == "password123" {
             if let sceneDelegate = view.window?.windowScene?.delegate as? SceneDelegate {
                 sceneDelegate.switchToTabBarController()

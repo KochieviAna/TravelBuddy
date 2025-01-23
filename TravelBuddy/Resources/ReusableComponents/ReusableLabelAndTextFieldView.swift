@@ -61,9 +61,9 @@ final class ReusableLabelAndTextFieldView: UIView {
     
     private var isSecured: Bool = false
     
-    var text: String {
+    var text: String? {
         get {
-            textField.text ?? ""
+            textField.text
         }
         set {
             textField.text = newValue
