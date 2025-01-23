@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 final class SignInVC: UIViewController {
     
@@ -274,15 +275,27 @@ final class SignInVC: UIViewController {
     }
     
     private func handleSignIn() {
-        let email = emailInputView.text
-        let password = passwordInputView.text
+        guard let email = emailInputView.text, !email.isEmpty else {
+            showAlert(message: "Please enter your email.")
+            return
+        }
+        guard let password = passwordInputView.text, !password.isEmpty else {
+            showAlert(message: "Please enter your password.")
+            return
+        }
         
-        if email == "test@travelbuddy.com" && password == "password123" {
-            if let sceneDelegate = view.window?.windowScene?.delegate as? SceneDelegate {
-                sceneDelegate.switchToTabBarController()
+        Auth.auth().signIn(withEmail: email, password: password) { [weak self] authResult, error in
+            if let error = error {
+                self?.showAlert(message: "Sign-In Error: \(error.localizedDescription)")
+                return
             }
-        } else {
-            print("Invalid credentials")
+            
+            if let user = authResult?.user {
+                print("User signed in: \(user.email ?? "No Email")")
+                if let sceneDelegate = self?.view.window?.windowScene?.delegate as? SceneDelegate {
+                    sceneDelegate.switchToTabBarController()
+                }
+            }
         }
     }
     
@@ -300,5 +313,13 @@ final class SignInVC: UIViewController {
         if let sceneDelegate = view.window?.windowScene?.delegate as? SceneDelegate {
             sceneDelegate.switchToTabBarController()
         }
+    }
+    
+    private func showAlert(message: String, completion: (() -> Void)? = nil) {
+        let alert = UIAlertController(title: "TravelBuddy", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+            completion?()
+        })
+        present(alert, animated: true)
     }
 }
