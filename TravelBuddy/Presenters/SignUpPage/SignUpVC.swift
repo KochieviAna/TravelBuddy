@@ -15,13 +15,24 @@ final class SignUpVC: UIViewController {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.alwaysBounceVertical = true
+        
         return scrollView
     }()
     
     private lazy var contentView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
+        
         return view
+    }()
+    
+    private lazy var activityIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .large)
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.color = .deepBlue
+        indicator.hidesWhenStopped = true
+        
+        return indicator
     }()
     
     private lazy var backButton: ReusableBackButton = {
@@ -32,11 +43,12 @@ final class SignUpVC: UIViewController {
     
     private lazy var signUpLabel: UILabel = {
         let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Sign Up"
         label.font = .robotoBold(size: 30)
         label.textAlignment = .right
         label.textColor = UIColor.deepBlue
-        label.translatesAutoresizingMaskIntoConstraints = false
+        
         return label
     }()
     
@@ -101,6 +113,7 @@ final class SignUpVC: UIViewController {
         view.backgroundColor = .systemBackground
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
+        view.addSubview(activityIndicator)
         
         [backButton, signUpLabel, fullNameInputView, emailInputView, passwordInputView, confirmPasswordInputView, signUpButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
@@ -123,6 +136,10 @@ final class SignUpVC: UIViewController {
             contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             contentView.bottomAnchor.constraint(equalTo: signUpButton.bottomAnchor, constant: 40),
+            
+            
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             
             backButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
             backButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
@@ -156,21 +173,29 @@ final class SignUpVC: UIViewController {
     
     private func setupBindings() {
         viewModel.onValidationError = { [weak self] message in
+            self?.hideActivityIndicator()
+            self?.showAlert(title: "Validation Error", message: message)
             self?.handleValidationError(message: message)
         }
         
         viewModel.onSignUpError = { [weak self] message in
+            self?.hideActivityIndicator()
+            self?.showAlert(title: "Sign Up Error", message: message)
             self?.setError(for: nil, message: message)
         }
         
         viewModel.onSignUpSuccess = { [weak self] in
+            self?.hideActivityIndicator()
             self?.clearErrors()
-            self?.showSuccessMessage()
+            self?.showAlert(title: "Success", message: "You have successfully signed up!") {
+                self?.showSuccessMessage()
+            }
         }
     }
     
     private func handleSignUp() {
         clearErrors()
+        showActivityIndicator()
         viewModel.signUp(
             fullName: fullNameInputView.text,
             email: emailInputView.text,
@@ -204,5 +229,23 @@ final class SignUpVC: UIViewController {
     
     private func showSuccessMessage() {
         navigationController?.popViewController(animated: true)
+    }
+    
+    private func showActivityIndicator() {
+        activityIndicator.startAnimating()
+        view.isUserInteractionEnabled = false
+    }
+    
+    private func hideActivityIndicator() {
+        activityIndicator.stopAnimating()
+        view.isUserInteractionEnabled = true
+    }
+    
+    private func showAlert(title: String, message: String, completion: (() -> Void)? = nil) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+            completion?()
+        }))
+        present(alert, animated: true, completion: nil)
     }
 }
