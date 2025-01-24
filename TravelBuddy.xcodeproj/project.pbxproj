@@ -232,7 +232,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 6YJPZH2Y6W;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TravelBuddy/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Travel Buddy";
@@ -269,7 +269,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 6YJPZH2Y6W;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TravelBuddy/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Travel Buddy";

@@ -10,7 +10,7 @@ import FirebaseAuth
 import FirebaseCore
 import GoogleSignIn
 import FirebaseFirestore
-import GoogleSignInSwift
+import AuthenticationServices
 
 final class SignInVC: UIViewController {
     
@@ -340,73 +340,33 @@ final class SignInVC: UIViewController {
     }
     
     private func handleGoogleSignIn() {
-        guard let clientID = FirebaseApp.app()?.options.clientID else {
-            showAlert(title: "Error", message: "Firebase client ID not found. Please check your Firebase configuration.")
-            return
-        }
-        
         showActivityIndicator()
-        
-        let configuration = GIDConfiguration(clientID: clientID)
-        GIDSignIn.sharedInstance.configuration = configuration
-        
-        GIDSignIn.sharedInstance.signIn(withPresenting: self) { [weak self] result, error in
-            guard let self = self else { return }
-            
-            if let error = error {
-                self.hideActivityIndicator()
-                self.showAlert(title: "Error", message: "Google Sign-In failed: \(error.localizedDescription)")
-                return
-            }
-            
-            guard let user = result?.user,
-                  let idToken = user.idToken?.tokenString else {
-                self.hideActivityIndicator()
-                self.showAlert(title: "Error", message: "Unable to retrieve Google user information.")
-                return
-            }
-            
-            let userName = user.profile?.name ?? "Unknown User"
-            let userEmail = user.profile?.email ?? "Unknown Email"
-            
-            let credential = GoogleAuthProvider.credential(
-                withIDToken: idToken,
-                accessToken: user.accessToken.tokenString
-            )
-            
-            Auth.auth().signIn(with: credential) { authResult, error in
-                self.hideActivityIndicator()
-                
-                if let error = error {
-                    self.showAlert(title: "Sign-In Failed", message: "Firebase Sign-In failed: \(error.localizedDescription)")
-                    return
+        viewModel.handleGoogleSignIn(from: self) { [weak self] success, errorMessage in
+            self?.hideActivityIndicator()
+            if success {
+                if let sceneDelegate = self?.view.window?.windowScene?.delegate as? SceneDelegate {
+                    sceneDelegate.switchToTabBarController()
                 }
-                
-                guard let uid = authResult?.user.uid else { return }
-                let db = Firestore.firestore()
-                let userData: [String: Any] = [
-                    "name": userName,
-                    "email": userEmail,
-                    "createdAt": FieldValue.serverTimestamp()
-                ]
-                
-                db.collection("users").document(uid).setData(userData) { error in
-                    if let error = error {
-                        print("Error saving user data: \(error.localizedDescription)")
-                    } else {
-                        print("User data successfully saved!")
-                    }
-                    
-                    if let sceneDelegate = self.view.window?.windowScene?.delegate as? SceneDelegate {
-                        sceneDelegate.switchToTabBarController()
-                    }
-                }
+            } else if let errorMessage = errorMessage {
+                self?.showAlert(title: "Google Sign-In Error", message: errorMessage)
             }
         }
     }
     
     private func handleAppleSignIn() {
-        print("Apple Sign-In tapped")
+        showActivityIndicator()
+        
+        let provider = ASAuthorizationAppleIDProvider()
+        let request = provider.createRequest()
+        
+        let nonce = viewModel.prepareAppleSignIn()
+        request.requestedScopes = [.fullName, .email]
+        request.nonce = nonce
+        
+        let controller = ASAuthorizationController(authorizationRequests: [request])
+        controller.delegate = self
+        controller.presentationContextProvider = self
+        controller.performRequests()
     }
     
     private func handleContinueAsGuest() {
@@ -433,5 +393,33 @@ final class SignInVC: UIViewController {
             completion?()
         }))
         present(alert, animated: true, completion: nil)
+    }
+}
+
+extension SignInVC: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
+            viewModel.appleSignIn(credential: appleIDCredential) { [weak self] success, errorMessage in
+                self?.hideActivityIndicator()
+                
+                if success {
+                    if let sceneDelegate = self?.view.window?.windowScene?.delegate as? SceneDelegate {
+                        sceneDelegate.switchToTabBarController()
+                    }
+                } else if let errorMessage = errorMessage {
+                    self?.showAlert(title: "Apple Sign-In Error", message: errorMessage)
+                }
+            }
+        }
+    }
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        hideActivityIndicator()
+        showAlert(title: "Apple Sign-In Error", message: error.localizedDescription)
+    }
+    
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        return self.view.window!
     }
 }
