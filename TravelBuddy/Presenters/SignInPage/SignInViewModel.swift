@@ -38,7 +38,6 @@ final class SignInViewModel {
             }
             
             if authResult?.user != nil {
-                UserManager.shared.isGuest = false
                 self?.onSignInSuccess?()
             } else {
                 self?.onSignInError?("Unexpected error occurred during sign-in.")
@@ -50,6 +49,9 @@ final class SignInViewModel {
         let emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}$"
         return NSPredicate(format: "SELF MATCHES %@", emailRegex).evaluate(with: email)
     }
+}
+
+extension SignInViewModel {
     
     func handleGoogleSignIn(from viewController: UIViewController, completion: @escaping (Bool, String?) -> Void) {
         guard let clientID = FirebaseApp.app()?.options.clientID else {
@@ -83,16 +85,6 @@ final class SignInViewModel {
                     return
                 }
                 
-                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                   let window = windowScene.windows.first,
-                   let tabBarController = window.rootViewController as? TabBarController {
-                    UserManager.shared.isGuest = false
-                    tabBarController.updateProfileTabToAuthenticated()
-                    completion(true, nil)
-                } else {
-                    completion(false, "TabBarController not found.")
-                }
-                
                 guard let uid = authResult?.user.uid else {
                     completion(false, "Unexpected error occurred.")
                     return
@@ -113,65 +105,16 @@ final class SignInViewModel {
                         print("Error saving user data: \(error.localizedDescription)")
                         completion(false, "Error saving user data.")
                     } else {
-                        UserManager.shared.isGuest = false
+                        print("User data successfully saved!")
                         completion(true, nil)
                     }
                 }
             }
         }
     }
-    
-    func prepareAppleSignIn() -> String {
-        let nonce = randomNonceString()
-        currentNonce = nonce
-        return sha256(nonce)
-    }
-    
-    func appleSignIn(credential: ASAuthorizationAppleIDCredential, completion: @escaping (Bool, String?) -> Void) {
-        guard let identityToken = credential.identityToken,
-              let tokenString = String(data: identityToken, encoding: .utf8) else {
-            completion(false, "Unable to retrieve identity token.")
-            return
-        }
-        
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let window = windowScene.windows.first,
-           let tabBarController = window.rootViewController as? TabBarController {
-            UserManager.shared.isGuest = false
-            tabBarController.updateProfileTabToAuthenticated()
-            completion(true, nil)
-        } else {
-            completion(false, "TabBarController not found.")
-        }
-        
-        guard let nonce = currentNonce else {
-            completion(false, "Invalid state: a nonce was not set.")
-            return
-        }
-        
-        let firebaseCredential = OAuthProvider.credential(
-            withProviderID: "apple.com",
-            idToken: tokenString,
-            rawNonce: nonce
-        )
-        
-        Auth.auth().signIn(with: firebaseCredential) { authResult, error in
-            if let error = error {
-                completion(false, "Firebase sign-in failed: \(error.localizedDescription)")
-                return
-            }
-            
-            guard let user = authResult?.user else {
-                completion(false, "User not found after sign-in.")
-                return
-            }
-            
-            print("Successfully signed in with Apple: \(user.uid)")
-            UserManager.shared.isGuest = false
-            completion(true, nil)
-        }
-    }
-    
+}
+
+extension SignInViewModel {
     func randomNonceString(length: Int = 32) -> String {
         precondition(length > 0)
         let charset: [Character] =
@@ -208,5 +151,44 @@ final class SignInViewModel {
         let inputData = Data(input.utf8)
         let hashedData = SHA256.hash(data: inputData)
         return hashedData.compactMap { String(format: "%02x", $0) }.joined()
+    }
+    
+    func appleSignIn(credential: ASAuthorizationAppleIDCredential, completion: @escaping (Bool, String?) -> Void) {
+        guard let identityToken = credential.identityToken,
+              let tokenString = String(data: identityToken, encoding: .utf8) else {
+            completion(false, "Unable to retrieve identity token.")
+            return
+        }
+        
+        guard let nonce = currentNonce else {
+            completion(false, "Invalid state: a nonce was not set.")
+            return
+        }
+        
+        let firebaseCredential = OAuthProvider.credential(
+            withProviderID: "apple.com",
+            idToken: tokenString,
+            rawNonce: nonce
+        )
+        Auth.auth().signIn(with: firebaseCredential) { authResult, error in
+            if let error = error {
+                completion(false, "Firebase sign-in failed: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let user = authResult?.user else {
+                completion(false, "User not found after sign-in.")
+                return
+            }
+            
+            print("Successfully signed in with Apple: \(user.uid)")
+            completion(true, nil)
+        }
+    }
+    
+    func prepareAppleSignIn() -> String {
+        let nonce = randomNonceString()
+        currentNonce = nonce
+        return sha256(nonce)
     }
 }

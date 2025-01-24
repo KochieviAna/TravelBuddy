@@ -6,16 +6,12 @@
 //
 
 import UIKit
-import Combine
 
 final class TabBarController: UITabBarController {
-    
-    private var cancellables = Set<AnyCancellable>()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTabBar()
-        observeUserState()
     }
     
     private func setupTabBar() {
@@ -48,25 +44,13 @@ final class TabBarController: UITabBarController {
             imageName: "chart.bar"
         )
         
-        let profileVC = createProfileViewController()
-        
-        viewControllers = [journeysVC, statisticsVC, profileVC]
-    }
-    
-    private func createProfileViewController() -> UINavigationController {
-        let rootVC: UIViewController
-        
-        if UserManager.shared.isGuest {
-            rootVC = GuestSignInVC()
-        } else {
-            rootVC = ProfileVC()
-        }
-        
-        return createNavigationController(
-            rootVC: rootVC,
+        let profileVC = createNavigationController(
+            rootVC: ProfileVC(),
             title: "Profile",
             imageName: "person"
         )
+        
+        viewControllers = [journeysVC, statisticsVC, profileVC]
     }
     
     private func createNavigationController(rootVC: UIViewController, title: String, imageName: String) -> UINavigationController {
@@ -77,31 +61,7 @@ final class TabBarController: UITabBarController {
             image: UIImage(systemName: imageName),
             selectedImage: UIImage(systemName: imageName + ".fill")
         )
-        return navigationController
-    }
-    
-    func updateProfileTabToAuthenticated() {
-        let profileVC = ProfileVC()
-        let profileNavController = createNavigationController(
-            rootVC: profileVC,
-            title: "Profile",
-            imageName: "person"
-        )
         
-        if var viewControllers = self.viewControllers, viewControllers.count > 2 {
-            let currentIndex = self.selectedIndex
-            viewControllers[2] = profileNavController
-            self.viewControllers = viewControllers
-            self.selectedIndex = currentIndex
-        }
-    }
-    
-    private func observeUserState() {
-        UserManager.shared.$isGuest.sink { [weak self] isGuest in
-            guard let self = self else { return }
-            DispatchQueue.main.async {
-                self.viewControllers?[2] = self.createProfileViewController()
-            }
-        }.store(in: &cancellables)
+        return navigationController
     }
 }
