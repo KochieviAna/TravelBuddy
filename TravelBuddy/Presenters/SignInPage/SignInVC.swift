@@ -7,6 +7,9 @@
 
 import UIKit
 import FirebaseAuth
+import FirebaseCore
+import GoogleSignIn
+import GoogleSignInSwift
 
 final class SignInVC: UIViewController {
     
@@ -336,7 +339,50 @@ final class SignInVC: UIViewController {
     }
     
     private func handleGoogleSignIn() {
-        print("Google Sign-In tapped")
+        guard let clientID = FirebaseApp.app()?.options.clientID else {
+            showAlert(title: "Error", message: "Firebase client ID not found. Please check your Firebase configuration.")
+            return
+        }
+        
+        showActivityIndicator()
+        
+        let configuration = GIDConfiguration(clientID: clientID)
+        
+        GIDSignIn.sharedInstance.configuration = configuration
+        
+        GIDSignIn.sharedInstance.signIn(withPresenting: self) { [weak self] result, error in
+            guard let self = self else { return }
+            
+            if let error = error {
+                self.hideActivityIndicator()
+                self.showAlert(title: "Error", message: "Google Sign-In failed: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let user = result?.user,
+                  let idToken = user.idToken?.tokenString else {
+                self.hideActivityIndicator()
+                self.showAlert(title: "Error", message: "Unable to retrieve Google user information.")
+                return
+            }
+            
+            let credential = GoogleAuthProvider.credential(
+                withIDToken: idToken,
+                accessToken: user.accessToken.tokenString
+            )
+            
+            Auth.auth().signIn(with: credential) { authResult, error in
+                if let error = error {
+                    self.hideActivityIndicator()
+                    self.showAlert(title: "Sign-In Failed", message: "Firebase Sign-In failed: \(error.localizedDescription)")
+                    return
+                }
+                
+                if let sceneDelegate = self.view.window?.windowScene?.delegate as? SceneDelegate {
+                    sceneDelegate.switchToTabBarController()
+                }
+            }
+        }
     }
     
     private func handleAppleSignIn() {
