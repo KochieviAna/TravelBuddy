@@ -12,7 +12,7 @@ import GoogleSignIn
 import FirebaseFirestore
 import AuthenticationServices
 
-final class SignInVC: UIViewController {
+class SignInVC: UIViewController {
     
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -78,7 +78,7 @@ final class SignInVC: UIViewController {
         return stackView
     }()
     
-    private lazy var emailInputView: ReusableLabelAndTextFieldView = {
+    lazy var emailInputView: ReusableLabelAndTextFieldView = {
         return ReusableLabelAndTextFieldView(
             label: "Email",
             placeholderText: "Your email address",
@@ -88,7 +88,7 @@ final class SignInVC: UIViewController {
         )
     }()
     
-    private lazy var passwordInputView: ReusableLabelAndTextFieldView = {
+    lazy var passwordInputView: ReusableLabelAndTextFieldView = {
         return ReusableLabelAndTextFieldView(
             label: "Password",
             placeholderText: "Your password",
@@ -179,9 +179,9 @@ final class SignInVC: UIViewController {
         return button
     }()
     
-    private lazy var guestSeparatorView = SeparatorView()
+    lazy var guestSeparatorView = SeparatorView()
     
-    private lazy var continueAsGuestButton: UIButton = {
+    lazy var continueAsGuestButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Continue as a Guest", for: .normal)
         button.setTitleColor(.deepBlue.withAlphaComponent(0.54), for: .normal)
@@ -200,7 +200,7 @@ final class SignInVC: UIViewController {
         return button
     }()
     
-    private let viewModel = SignInViewModel()
+    let viewModel = SignInViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -208,7 +208,7 @@ final class SignInVC: UIViewController {
         setupBindings()
     }
     
-    private func setupUI() {
+    func setupUI() {
         view.backgroundColor = .systemBackground
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
@@ -310,13 +310,17 @@ final class SignInVC: UIViewController {
         
         viewModel.onSignInSuccess = { [weak self] in
             self?.hideActivityIndicator()
-            if let sceneDelegate = self?.view.window?.windowScene?.delegate as? SceneDelegate {
-                sceneDelegate.switchToTabBarController()
+            UserManager.shared.isGuest = false
+            if let sceneDelegate = self?.view.window?.windowScene?.delegate as? SceneDelegate,
+               let tabBarController = sceneDelegate.window?.rootViewController as? TabBarController {
+                tabBarController.updateProfileTabToAuthenticated()
+                
+                tabBarController.selectedIndex = 2
             }
         }
     }
     
-    private func handleSignIn() {
+    func handleSignIn() {
         clearErrors()
         showActivityIndicator()
         viewModel.signIn(email: emailInputView.text, password: passwordInputView.text)
@@ -334,12 +338,12 @@ final class SignInVC: UIViewController {
         inputView?.setError(message)
     }
     
-    private func clearErrors() {
+    func clearErrors() {
         emailInputView.setError(nil)
         passwordInputView.setError(nil)
     }
     
-    private func handleGoogleSignIn() {
+    func handleGoogleSignIn() {
         showActivityIndicator()
         viewModel.handleGoogleSignIn(from: self) { [weak self] success, errorMessage in
             self?.hideActivityIndicator()
@@ -372,22 +376,24 @@ final class SignInVC: UIViewController {
     private func handleContinueAsGuest() {
         print("Continue as a Guest tapped")
         
+        UserManager.shared.isGuest = true
+        
         if let sceneDelegate = view.window?.windowScene?.delegate as? SceneDelegate {
             sceneDelegate.switchToTabBarController()
         }
     }
     
-    private func showActivityIndicator() {
+    func showActivityIndicator() {
         activityIndicator.startAnimating()
         view.isUserInteractionEnabled = false
     }
     
-    private func hideActivityIndicator() {
+    func hideActivityIndicator() {
         activityIndicator.stopAnimating()
         view.isUserInteractionEnabled = true
     }
     
-    private func showAlert(title: String, message: String, completion: (() -> Void)? = nil) {
+    func showAlert(title: String, message: String, completion: (() -> Void)? = nil) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
             completion?()

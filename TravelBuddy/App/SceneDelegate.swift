@@ -35,5 +35,6 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func switchToTabBarController() {
         let tabBarController = TabBarController()
         window?.rootViewController = tabBarController
+        window?.makeKeyAndVisible()
     }
 }
