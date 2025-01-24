@@ -9,6 +9,7 @@ import UIKit
 import FirebaseAuth
 import FirebaseCore
 import GoogleSignIn
+import FirebaseFirestore
 import GoogleSignInSwift
 
 final class SignInVC: UIViewController {
@@ -347,7 +348,6 @@ final class SignInVC: UIViewController {
         showActivityIndicator()
         
         let configuration = GIDConfiguration(clientID: clientID)
-        
         GIDSignIn.sharedInstance.configuration = configuration
         
         GIDSignIn.sharedInstance.signIn(withPresenting: self) { [weak self] result, error in
@@ -366,20 +366,40 @@ final class SignInVC: UIViewController {
                 return
             }
             
+            let userName = user.profile?.name ?? "Unknown User"
+            let userEmail = user.profile?.email ?? "Unknown Email"
+            
             let credential = GoogleAuthProvider.credential(
                 withIDToken: idToken,
                 accessToken: user.accessToken.tokenString
             )
             
             Auth.auth().signIn(with: credential) { authResult, error in
+                self.hideActivityIndicator()
+                
                 if let error = error {
-                    self.hideActivityIndicator()
                     self.showAlert(title: "Sign-In Failed", message: "Firebase Sign-In failed: \(error.localizedDescription)")
                     return
                 }
                 
-                if let sceneDelegate = self.view.window?.windowScene?.delegate as? SceneDelegate {
-                    sceneDelegate.switchToTabBarController()
+                guard let uid = authResult?.user.uid else { return }
+                let db = Firestore.firestore()
+                let userData: [String: Any] = [
+                    "name": userName,
+                    "email": userEmail,
+                    "createdAt": FieldValue.serverTimestamp()
+                ]
+                
+                db.collection("users").document(uid).setData(userData) { error in
+                    if let error = error {
+                        print("Error saving user data: \(error.localizedDescription)")
+                    } else {
+                        print("User data successfully saved!")
+                    }
+                    
+                    if let sceneDelegate = self.view.window?.windowScene?.delegate as? SceneDelegate {
+                        sceneDelegate.switchToTabBarController()
+                    }
                 }
             }
         }
