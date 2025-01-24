@@ -83,6 +83,16 @@ final class SignInViewModel {
                     return
                 }
                 
+                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                   let window = windowScene.windows.first,
+                   let tabBarController = window.rootViewController as? TabBarController {
+                    UserManager.shared.isGuest = false
+                    tabBarController.updateProfileTabToAuthenticated()
+                    completion(true, nil)
+                } else {
+                    completion(false, "TabBarController not found.")
+                }
+                
                 guard let uid = authResult?.user.uid else {
                     completion(false, "Unexpected error occurred.")
                     return
@@ -122,6 +132,16 @@ final class SignInViewModel {
               let tokenString = String(data: identityToken, encoding: .utf8) else {
             completion(false, "Unable to retrieve identity token.")
             return
+        }
+        
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = windowScene.windows.first,
+           let tabBarController = window.rootViewController as? TabBarController {
+            UserManager.shared.isGuest = false
+            tabBarController.updateProfileTabToAuthenticated()
+            completion(true, nil)
+        } else {
+            completion(false, "TabBarController not found.")
         }
         
         guard let nonce = currentNonce else {

@@ -89,8 +89,10 @@ final class TabBarController: UITabBarController {
         )
         
         if var viewControllers = self.viewControllers, viewControllers.count > 2 {
+            let currentIndex = self.selectedIndex
             viewControllers[2] = profileNavController
             self.viewControllers = viewControllers
+            self.selectedIndex = currentIndex
         }
     }
     
