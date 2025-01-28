@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 final class ReusableBackButton: UIButton {
     
@@ -23,5 +24,18 @@ final class ReusableBackButton: UIButton {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+struct ReusableBackButtonWrapper: UIViewRepresentable {
+    
+    let action: () -> Void
+    
+    func makeUIView(context: Context) -> UIButton {
+        let button = ReusableBackButton(action: action)
+        return button
+    }
+    
+    func updateUIView(_ uiView: UIButton, context: Context) {
     }
 }

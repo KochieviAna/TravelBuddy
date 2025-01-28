@@ -16,6 +16,13 @@ final class TabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTabBar()
+        
+        if let currentUser = Auth.auth().currentUser {
+            userName = currentUser.displayName ?? "Unknown User"
+            userEmail = currentUser.email ?? "Unknown Email"
+        }
+        
+        setupTabBar()
     }
     
     private func setupTabBar() {
@@ -63,18 +70,15 @@ final class TabBarController: UITabBarController {
     
     private func handleLogout() {
         do {
+            // Sign out the user
             try Auth.auth().signOut()
             
             viewControllers?.forEach { viewController in
                 if let navController = viewController as? UINavigationController {
-                    navController.viewControllers.forEach { childVC in
-                        childVC.willMove(toParent: nil)
-                        childVC.view.removeFromSuperview()
-                        childVC.removeFromParent()
-                    }
-                    navController.viewControllers.removeAll()
+                    navController.popToRootViewController(animated: false)
                 }
             }
+            
             viewControllers = nil
             
             guard let sceneDelegate = view.window?.windowScene?.delegate as? SceneDelegate else {
@@ -86,6 +90,7 @@ final class TabBarController: UITabBarController {
             signInVC.navigationBar.isHidden = true
             sceneDelegate.window?.rootViewController = signInVC
             sceneDelegate.window?.makeKeyAndVisible()
+            
         } catch let error {
             print("Error during logout: \(error.localizedDescription)")
         }
@@ -104,12 +109,16 @@ final class TabBarController: UITabBarController {
         case "Journey Archives":
             destinationView = UIHostingController(rootView: JourneyArchivesView())
         case "Vehicle Details":
-            destinationView = UIHostingController(rootView: VehicleDetailsView())
+            destinationView = UIHostingController(rootView: VehicleDetailsView().navigationBarBackButtonHidden())
         default:
             return
         }
         
-        selectedNavController.pushViewController(destinationView, animated: true)
+        if let existingViewController = selectedNavController.viewControllers.first(where: { ($0 as? UIHostingController<PersonalDetailsView>) != nil }) {
+            selectedNavController.popToViewController(existingViewController, animated: true)
+        } else {
+            selectedNavController.pushViewController(destinationView, animated: true)
+        }
     }
     
     private func createHostingController<Content: View>(
