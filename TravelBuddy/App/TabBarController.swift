@@ -70,7 +70,6 @@ final class TabBarController: UITabBarController {
     
     private func handleLogout() {
         do {
-            // Sign out the user
             try Auth.auth().signOut()
             
             viewControllers?.forEach { viewController in
