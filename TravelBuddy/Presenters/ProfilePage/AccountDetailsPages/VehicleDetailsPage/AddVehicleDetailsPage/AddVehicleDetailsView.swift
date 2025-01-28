@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
+import FirebaseAuth
 
 struct AddVehicleDetailsView: View {
     
@@ -83,10 +85,49 @@ struct AddVehicleDetailsView: View {
                         hybridEfficiency: Double(hybridEfficiency) ?? 0,
                         electricRange: Double(electricRange) ?? 0
                     )
+                    saveVehicleToFirestore(car: car)
                     onAddCar(car)
                 }
             }
             .navigationBarTitle("Add Vehicle", displayMode: .inline)
+        }
+    }
+    
+    private func saveVehicleToFirestore(car: Car) {
+        let db = Firestore.firestore()
+        
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("No user is logged in")
+            return
+        }
+        
+        var ref: DocumentReference? = nil
+        ref = db.collection("users").document(userId).collection("vehicles").addDocument(data: [
+            "brand": car.brand,
+            "model": car.model,
+            "year": car.year,
+            "engineType": car.engineType,
+            "fuelType": car.fuelType,
+            "fuelTankCapacity": car.fuelTankCapacity,
+            "combinedMpg": car.combinedMpg,
+            "fuelLitresPer100Km": car.fuelLitresPer100Km,
+            "co2Emission": car.co2Emission,
+            "batteryCapacityElectric": car.batteryCapacityElectric,
+            "epaKwh100MiElectric": car.epaKwh100MiElectric,
+            "hybridEfficiency": car.hybridEfficiency,
+            "electricRange": car.electricRange
+        ]) { error in
+            if let error = error {
+                print("Error adding vehicle to Firestore: \(error)")
+            } else {
+                print("Vehicle successfully added to Firestore!")
+                if let id = ref?.documentID {
+                    print("Saved Vehicle ID: \(id)")
+                    var updatedCar = car
+                    updatedCar.id = id
+                    onAddCar(updatedCar)
+                }
+            }
         }
     }
 }

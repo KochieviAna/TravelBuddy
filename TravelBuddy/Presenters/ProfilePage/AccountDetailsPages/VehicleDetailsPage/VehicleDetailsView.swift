@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
+import FirebaseAuth
 
 struct VehicleDetailsView: View {
     
@@ -90,7 +92,10 @@ struct VehicleDetailsView: View {
                 Spacer()
                 
                 Button(action: {
-                    deleteCar()
+                    if let car = selectedCar {
+                        deleteVehicleFromFirestore(car: car)
+                        selectedCar = nil
+                    }
                 }) {
                     Image(systemName: "trash.fill")
                         .foregroundStyle(.deepBlue)
@@ -161,8 +166,26 @@ struct VehicleDetailsView: View {
         .padding(.horizontal)
     }
     
-    private func deleteCar() {
-        selectedCar = nil
+    private func deleteVehicleFromFirestore(car: Car) {
+        guard let carId = car.id else {
+            print("Car ID is missing!")
+            return
+        }
+        
+        let db = Firestore.firestore()
+        
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("User not logged in!")
+            return
+        }
+        
+        db.collection("users").document(userId).collection("vehicles").document(carId).delete { error in
+            if let error = error {
+                print("Error deleting vehicle: \(error)")
+            } else {
+                print("Vehicle successfully deleted from Firestore!")
+            }
+        }
     }
     
     private func getNavigationController() -> UINavigationController? {
