@@ -15,6 +15,7 @@ struct VehicleDetailsView: View {
     @State private var isAddingCar = false
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.dismiss) var dismiss
+    private var db = Firestore.firestore()
     
     var body: some View {
         ZStack {
@@ -34,6 +35,29 @@ struct VehicleDetailsView: View {
                 selectedCar = car
                 isAddingCar = false
             })
+        }
+        .onAppear {
+            fetchVehicle()
+        }
+    }
+    
+    private func fetchVehicle() {
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("User not logged in!")
+            return
+        }
+        
+        db.collection("users").document(userId).collection("vehicles").limit(to: 1).getDocuments { snapshot, error in
+            if let error = error {
+                print("Error fetching vehicle: \(error)")
+            } else {
+                if let document = snapshot?.documents.first {
+                    let car = try? document.data(as: Car.self)
+                    self.selectedCar = car
+                } else {
+                    print("No vehicle found!")
+                }
+            }
         }
     }
     
@@ -157,7 +181,7 @@ struct VehicleDetailsView: View {
                     .foregroundStyle(.deepBlue)
             }
             
-            if car.engineType == "Diesel" { // Diesel details
+            if car.engineType == "Diesel" {
                 Text("Fuel Tank Capacity: \(car.fuelTankCapacity, specifier: "%.1f") Gallons")
                     .font(.robotoRegular(size: 20))
                     .foregroundStyle(.deepBlue)
