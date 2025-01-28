@@ -37,4 +37,18 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.rootViewController = tabBarController
         window?.makeKeyAndVisible()
     }
+    
+    func switchToSignInVC() {
+        window?.rootViewController?.children.forEach { child in
+            child.willMove(toParent: nil)
+            child.view.removeFromSuperview()
+            child.removeFromParent()
+        }
+        window?.rootViewController = nil
+
+        let signInVC = UINavigationController(rootViewController: SignInVC())
+        signInVC.navigationBar.isHidden = true
+        window?.rootViewController = signInVC
+        window?.makeKeyAndVisible()
+    }
 }
