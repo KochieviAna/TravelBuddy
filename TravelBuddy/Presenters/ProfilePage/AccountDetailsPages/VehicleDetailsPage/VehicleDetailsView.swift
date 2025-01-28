@@ -124,15 +124,11 @@ struct VehicleDetailsView: View {
                 .foregroundStyle(.deepBlue)
             
             if car.engineType == "Gasoline" {
-                Text("Fuel Tank Capacity: \(car.fuelTankCapacity, specifier: "%.1f") L")
+                Text("Fuel Tank Capacity: \(car.fuelTankCapacity, specifier: "%.1f") Gallons")
                     .font(.robotoRegular(size: 20))
                     .foregroundStyle(.deepBlue)
                 
-                Text("Combined MPG: \(car.combinedMpg, specifier: "%.1f")")
-                    .font(.robotoRegular(size: 20))
-                    .foregroundStyle(.deepBlue)
-                
-                Text("Fuel Consumption: \(car.fuelLitresPer100Km, specifier: "%.1f") L/100km")
+                Text("Fuel Consumption: \(car.fuelConsumptionMpg, specifier: "%.1f") MPG")
                     .font(.robotoRegular(size: 20))
                     .foregroundStyle(.deepBlue)
                 
@@ -157,6 +153,20 @@ struct VehicleDetailsView: View {
                     .foregroundStyle(.deepBlue)
                 
                 Text("Electric Range: \(car.electricRange, specifier: "%.1f") miles")
+                    .font(.robotoRegular(size: 20))
+                    .foregroundStyle(.deepBlue)
+            }
+            
+            if car.engineType == "Diesel" { // Diesel details
+                Text("Fuel Tank Capacity: \(car.fuelTankCapacity, specifier: "%.1f") Gallons")
+                    .font(.robotoRegular(size: 20))
+                    .foregroundStyle(.deepBlue)
+                
+                Text("Fuel Consumption: \(car.fuelConsumptionMpg, specifier: "%.1f") MPG")
+                    .font(.robotoRegular(size: 20))
+                    .foregroundStyle(.deepBlue)
+                
+                Text("CO2 Emissions: \(car.co2Emission) g/km")
                     .font(.robotoRegular(size: 20))
                     .foregroundStyle(.deepBlue)
             }

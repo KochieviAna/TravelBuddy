@@ -16,8 +16,7 @@ struct Car: Identifiable, Codable {
     var engineType: String
     var fuelType: String
     var fuelTankCapacity: Double
-    var combinedMpg: Double
-    var fuelLitresPer100Km: Double
+    var fuelConsumptionMpg: Double
     var co2Emission: Double
     var batteryCapacityElectric: Double
     var epaKwh100MiElectric: Double
