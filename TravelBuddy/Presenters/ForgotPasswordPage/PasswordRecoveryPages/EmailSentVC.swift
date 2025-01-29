@@ -57,7 +57,7 @@ final class EmailSentVC: UIViewController {
     
     private lazy var backToSignInButton: ReusableButton = {
         return ReusableButton(
-            title: "Back to Sign in",
+            title: "Done",
             action: { [weak self] in
                 self?.handleBackToSignInButton()
             }

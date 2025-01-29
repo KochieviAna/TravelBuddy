@@ -96,6 +96,9 @@ final class ForgotPasswordVC: UIViewController {
     
     private func setupUI() {
         view.backgroundColor = .systemBackground
+        
+        navigationController?.setNavigationBarHidden(true, animated: false)
+
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         view.addSubview(activityIndicator)

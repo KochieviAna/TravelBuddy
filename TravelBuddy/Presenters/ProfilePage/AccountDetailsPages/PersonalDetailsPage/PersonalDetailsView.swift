@@ -12,10 +12,9 @@ struct PersonalDetailsView: View {
     @State private var selectedImage: UIImage? = nil
     @State private var sourceType: UIImagePickerController.SourceType = .photoLibrary
     
-    @Environment(\.presentationMode) var presentationMode
-    
     var userName: String
     var userEmail: String
+    var onChangePassword: () -> Void // Callback to trigger navigation to ForgotPasswordVC
     
     var body: some View {
         ZStack {
@@ -24,17 +23,11 @@ struct PersonalDetailsView: View {
             
             VStack {
                 backButton
-                
                 profileHeader
-                
                 nameAndSurnameView
-                
                 emailView
-                
                 changePasswordButton
-                
                 deleteAccountButton
-                
                 Spacer()
             }
             .sheet(isPresented: $isImagePickerPresented) {
@@ -49,8 +42,6 @@ struct PersonalDetailsView: View {
                 ReusableBackButtonWrapper(action: {
                     if let navigationController = getNavigationController() {
                         navigationController.popViewController(animated: true)
-                    } else {
-                        presentationMode.wrappedValue.dismiss()
                     }
                 })
                 .frame(width: 24, height: 24)
@@ -83,17 +74,14 @@ struct PersonalDetailsView: View {
                 
                 Button(action: {
                     let actionSheet = UIAlertController(title: "Choose Photo", message: nil, preferredStyle: .actionSheet)
-                    
                     actionSheet.addAction(UIAlertAction(title: "Take Photo", style: .default, handler: { _ in
                         self.sourceType = .camera
                         self.isImagePickerPresented.toggle()
                     }))
-                    
                     actionSheet.addAction(UIAlertAction(title: "Choose from Library", style: .default, handler: { _ in
                         self.sourceType = .photoLibrary
                         self.isImagePickerPresented.toggle()
                     }))
-                    
                     actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
                     
                     if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
@@ -150,7 +138,7 @@ struct PersonalDetailsView: View {
     private var changePasswordButton: some View {
         VStack {
             Button(action: {
-                
+                onChangePassword() // Trigger navigation to ForgotPasswordVC
             }) {
                 HStack {
                     Image(systemName: "lock")
@@ -172,7 +160,7 @@ struct PersonalDetailsView: View {
     
     private var deleteAccountButton: some View {
         Button(action: {
-            
+            // Delete Account functionality here
         }) {
             Text("Delete Account")
                 .foregroundStyle(.burgundyRed)
@@ -199,5 +187,5 @@ struct PersonalDetailsView: View {
 }
 
 #Preview {
-    PersonalDetailsView(userName: "Ana Kochievi", userEmail: "anna.kochievi@gmail.com")
+    PersonalDetailsView(userName: "Ana Kochievi", userEmail: "anna.kochievi@gmail.com", onChangePassword: {})
 }
