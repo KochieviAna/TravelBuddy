@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import FirebaseAuth
+import FirebaseFirestore
 
 struct PersonalDetailsView: View {
     @State private var isImagePickerPresented = false
@@ -14,7 +16,7 @@ struct PersonalDetailsView: View {
     
     var userName: String
     var userEmail: String
-    var onChangePassword: () -> Void // Callback to trigger navigation to ForgotPasswordVC
+    var onChangePassword: () -> Void
     
     var body: some View {
         ZStack {
@@ -138,7 +140,7 @@ struct PersonalDetailsView: View {
     private var changePasswordButton: some View {
         VStack {
             Button(action: {
-                onChangePassword() // Trigger navigation to ForgotPasswordVC
+                onChangePassword()
             }) {
                 HStack {
                     Image(systemName: "lock")
@@ -160,7 +162,7 @@ struct PersonalDetailsView: View {
     
     private var deleteAccountButton: some View {
         Button(action: {
-            // Delete Account functionality here
+            deleteAccount()
         }) {
             Text("Delete Account")
                 .foregroundStyle(.burgundyRed)
@@ -174,6 +176,95 @@ struct PersonalDetailsView: View {
         .cornerRadius(10)
         .padding(.horizontal)
         .padding(.top)
+    }
+    
+    private func deleteAccount() {
+        guard let user = Auth.auth().currentUser else { return }
+        
+        let db = Firestore.firestore()
+        let userRef = db.collection("users").document(user.uid)
+        
+        deleteUserCollections(from: userRef) { success in
+            if success {
+                userRef.delete { error in
+                    if let error = error {
+                        print("Error deleting user data from Firestore: \(error.localizedDescription)")
+                    } else {
+                        print("User data deleted from Firestore.")
+                    }
+                }
+            } else {
+                print("Failed to delete user collections.")
+            }
+        }
+        
+        user.delete { error in
+            if let error = error {
+                print("Error deleting account: \(error.localizedDescription)")
+            } else {
+                print("Account deleted successfully!")
+                
+                try? Auth.auth().signOut()
+                
+                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                   let sceneDelegate = windowScene.delegate as? SceneDelegate {
+                    sceneDelegate.switchToSignInVC()
+                }
+            }
+        }
+    }
+    
+    private func deleteUserCollections(from documentRef: DocumentReference, completion: @escaping (Bool) -> Void) {
+        documentRef.collection("vehicles").getDocuments { snapshot, error in
+            if let error = error {
+                print("Error fetching vehicles collection: \(error.localizedDescription)")
+                completion(false)
+                return
+            }
+            
+            let deleteGroup = DispatchGroup()
+            for document in snapshot!.documents {
+                deleteGroup.enter()
+                document.reference.delete { error in
+                    if let error = error {
+                        print("Error deleting vehicle document: \(error.localizedDescription)")
+                    }
+                    deleteGroup.leave()
+                }
+            }
+            
+            deleteGroup.notify(queue: .main) {
+                // Recursively delete other subcollections
+                self.deleteUserSubcollections(from: documentRef) { success in
+                    completion(success)
+                }
+            }
+        }
+    }
+    
+    private func deleteUserSubcollections(from documentRef: DocumentReference, completion: @escaping (Bool) -> Void) {
+        documentRef.collection("other_collection").getDocuments { snapshot, error in
+            if let error = error {
+                print("Error fetching other collections: \(error.localizedDescription)")
+                completion(false)
+                return
+            }
+            
+            let deleteGroup = DispatchGroup()
+            for document in snapshot!.documents {
+                deleteGroup.enter()
+                document.reference.delete { error in
+                    if let error = error {
+                        print("Error deleting other collection document: \(error.localizedDescription)")
+                    }
+                    deleteGroup.leave()
+                }
+            }
+            
+            deleteGroup.notify(queue: .main) {
+                completion(true)
+            }
+        }
     }
     
     private func getNavigationController() -> UINavigationController? {

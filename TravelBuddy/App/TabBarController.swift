@@ -17,7 +17,6 @@ final class TabBarController: UITabBarController {
         super.viewDidLoad()
         setupTabBar()
         
-        // Fetching user data from Firebase
         if let currentUser = Auth.auth().currentUser {
             userName = currentUser.displayName ?? "Unknown User"
             userEmail = currentUser.email ?? "Unknown Email"
@@ -36,7 +35,6 @@ final class TabBarController: UITabBarController {
         tabBar.standardAppearance = appearance
         tabBar.scrollEdgeAppearance = appearance
         
-        // Set up view controllers for the Tab Bar
         let journeysVC = createHostingController(
             rootView: JourneysView(),
             title: "Journeys",
@@ -74,7 +72,6 @@ final class TabBarController: UITabBarController {
         do {
             try Auth.auth().signOut()
             
-            // Logout and reset the viewControllers to show the SignInVC
             viewControllers?.forEach { viewController in
                 if let navController = viewController as? UINavigationController {
                     navController.popToRootViewController(animated: false)
@@ -88,7 +85,6 @@ final class TabBarController: UITabBarController {
                 return
             }
             
-            // Redirect to SignInVC
             let signInVC = UINavigationController(rootViewController: SignInVC())
             signInVC.navigationBar.isHidden = true
             sceneDelegate.window?.rootViewController = signInVC
@@ -127,10 +123,8 @@ final class TabBarController: UITabBarController {
     }
     
     private func navigateToForgotPassword() {
-        // Navigation to ForgotPasswordVC
         let forgotPasswordVC = ForgotPasswordVC()
         
-        // Use the tab bar controller's selected navigation controller to push the ForgotPasswordVC
         if let selectedNavController = selectedViewController as? UINavigationController {
             selectedNavController.pushViewController(forgotPasswordVC, animated: true)
         }
@@ -150,13 +144,11 @@ final class TabBarController: UITabBarController {
         return hostingController
     }
     
-    // Clean up the controllers when the Tab Bar disappears
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         viewControllers?.removeAll()
     }
     
-    // Deinitializer for cleanup
     deinit {
         print("\(type(of: self)) deallocated")
     }
