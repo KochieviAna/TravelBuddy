@@ -29,6 +29,7 @@ struct ProfileView: View {
             }
             .padding(.vertical)
         }
+        .ignoresSafeArea()
         .padding(.top)
         .background(Color(.systemBackground))
         .onDisappear {

@@ -28,13 +28,13 @@ struct JourneysView: View {
             Image("journey")
                 .resizable()
                 .frame(width: 200, height: 200).opacity(0.5)
-                .padding()
             
             Button("Start Journey with Travel Buddy") {
                 showAddJourneySheet.toggle()
             }
             .foregroundStyle(.deepBlue)
             .font(.robotoBold(size: 16))
+            .padding()
         }
     }
 }

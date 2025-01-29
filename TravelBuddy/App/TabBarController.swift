@@ -104,7 +104,7 @@ final class TabBarController: UITabBarController {
         let destinationView: UIViewController
         switch detail {
         case "Personal Details":
-            destinationView = UIHostingController(rootView: PersonalDetailsView())
+            destinationView = UIHostingController(rootView: PersonalDetailsView(userName: userName, userEmail: userEmail).navigationBarBackButtonHidden())
         case "Journey Archives":
             destinationView = UIHostingController(rootView: JourneyArchivesView())
         case "Vehicle Details":
