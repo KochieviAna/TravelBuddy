@@ -33,48 +33,79 @@ struct AddVehicleDetailsView: View {
             Form {
                 Section(header: Text("General Information")) {
                     TextField("Brand", text: $brand)
+                        .foregroundStyle(.stoneGrey)
+                    
                     TextField("Model", text: $model)
+                        .foregroundStyle(.stoneGrey)
+                    
                     TextField("Year", text: $year)
+                        .foregroundStyle(.stoneGrey)
                     
                     Picker("Engine Type", selection: $engineType) {
                         Text("Gasoline").tag("Gasoline")
+                            .foregroundStyle(.stoneGrey)
+                        
                         Text("Electric").tag("Electric")
+                            .foregroundStyle(.stoneGrey)
+                        
                         Text("Hybrid").tag("Hybrid")
+                            .foregroundStyle(.stoneGrey)
+                        
                         Text("Diesel").tag("Diesel")
+                            .foregroundStyle(.stoneGrey)
                     }
                     .pickerStyle(SegmentedPickerStyle())
                     
                     TextField("Fuel Type", text: $fuelType)
+                        .foregroundStyle(.stoneGrey)
                 }
                 
                 if engineType == "Gasoline" {
                     Section(header: Text("Gasoline Vehicle Information")) {
                         TextField("Fuel Tank Capacity (gallons)", text: $fuelTankCapacity)
+                            .foregroundStyle(.stoneGrey)
+                        
                         TextField("Fuel Consumption (MPG)", text: $fuelConsumptionMpg)
+                            .foregroundStyle(.stoneGrey)
+                        
                         TextField("CO2 Emissions (g/mi)", text: $co2Emission)
+                            .foregroundStyle(.stoneGrey)
                     }
                 }
                 
                 if engineType == "Electric" {
                     Section(header: Text("Electric Vehicle Information")) {
                         TextField("Battery Capacity (kWh)", text: $batteryCapacityElectric)
+                            .foregroundStyle(.stoneGrey)
+                        
                         TextField("EPA Electric Consumption (kWh/100mi)", text: $epaKwh100MiElectric)
+                            .foregroundStyle(.stoneGrey)
                     }
                 }
                 
                 if engineType == "Hybrid" {
                     Section(header: Text("Hybrid Vehicle Information")) {
                         TextField("CO2 Emissions (g/mi)", text: $co2Emission)
+                            .foregroundStyle(.stoneGrey)
+                        
                         TextField("Hybrid Fuel Efficiency (MPG)", text: $hybridEfficiency)
+                            .foregroundStyle(.stoneGrey)
+                        
                         TextField("Electric Range (miles)", text: $electricRange)
+                            .foregroundStyle(.stoneGrey)
                     }
                 }
                 
                 if engineType == "Diesel" {
                     Section(header: Text("Diesel Vehicle Information")) {
                         TextField("Fuel Tank Capacity (gallons)", text: $fuelTankCapacity)
+                            .foregroundStyle(.stoneGrey)
+                        
                         TextField("Fuel Consumption (MPG)", text: $fuelConsumptionMpg)
+                            .foregroundStyle(.stoneGrey)
+                        
                         TextField("CO2 Emissions (g/mi)", text: $co2Emission)
+                            .foregroundStyle(.stoneGrey)
                     }
                 }
                 
@@ -100,8 +131,17 @@ struct AddVehicleDetailsView: View {
                         showAlert = true
                     }
                 }
+                .foregroundStyle(.deepBlue)
             }
-            .navigationBarTitle("Add Vehicle", displayMode: .inline)
+            .background(Color(.systemBackground))
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("Add Vehicle")
+                        .font(.robotoBold(size: 20))
+                        .foregroundColor(.deepBlue)
+                }
+            }
+            .foregroundStyle(.stoneGrey)
             .alert(isPresented: $showAlert) {
                 Alert(title: Text("Missing Information"), message: Text("Please fill in all fields before saving."), dismissButton: .default(Text("OK")))
             }
