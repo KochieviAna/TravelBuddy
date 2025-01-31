@@ -30,108 +30,112 @@ struct AddVehicleDetailsView: View {
     
     var body: some View {
         NavigationView {
-            Form {
-                Section(header: Text("General Information")) {
-                    TextField("Brand", text: $brand)
-                        .foregroundStyle(.stoneGrey)
+            ZStack {
+                Color(.systemBackground)
+                    .edgesIgnoringSafeArea(.all)
+                Form {
+                    Section(header: Text("General Information")) {
+                        TextField("Brand", text: $brand)
+                            .foregroundStyle(.deepBlue)
+                        
+                        TextField("Model", text: $model)
+                            .foregroundStyle(.deepBlue)
+                        
+                        TextField("Year", text: $year)
+                            .foregroundStyle(.deepBlue)
+                        
+                        Picker("Engine Type", selection: $engineType) {
+                            Text("Gasoline").tag("Gasoline")
+                                .foregroundStyle(.deepBlue)
+                            
+                            Text("Electric").tag("Electric")
+                                .foregroundStyle(.deepBlue)
+                            
+                            Text("Hybrid").tag("Hybrid")
+                                .foregroundStyle(.deepBlue)
+                            
+                            Text("Diesel").tag("Diesel")
+                                .foregroundStyle(.deepBlue)
+                        }
+                        .pickerStyle(SegmentedPickerStyle())
+                        
+                        TextField("Fuel Type", text: $fuelType)
+                            .foregroundStyle(.deepBlue)
+                    }
                     
-                    TextField("Model", text: $model)
-                        .foregroundStyle(.stoneGrey)
+                    if engineType == "Gasoline" {
+                        Section(header: Text("Gasoline Vehicle Information")) {
+                            TextField("Fuel Tank Capacity (gallons)", text: $fuelTankCapacity)
+                                .foregroundStyle(.deepBlue)
+                            
+                            TextField("Fuel Consumption (MPG)", text: $fuelConsumptionMpg)
+                                .foregroundStyle(.deepBlue)
+                            
+                            TextField("CO2 Emissions (g/mi)", text: $co2Emission)
+                                .foregroundStyle(.deepBlue)
+                        }
+                    }
                     
-                    TextField("Year", text: $year)
-                        .foregroundStyle(.stoneGrey)
+                    if engineType == "Electric" {
+                        Section(header: Text("Electric Vehicle Information")) {
+                            TextField("Battery Capacity (kWh)", text: $batteryCapacityElectric)
+                                .foregroundStyle(.deepBlue)
+                            
+                            TextField("EPA Electric Consumption (kWh/100mi)", text: $epaKwh100MiElectric)
+                                .foregroundStyle(.deepBlue)
+                        }
+                    }
                     
-                    Picker("Engine Type", selection: $engineType) {
-                        Text("Gasoline").tag("Gasoline")
-                            .foregroundStyle(.stoneGrey)
-                        
-                        Text("Electric").tag("Electric")
-                            .foregroundStyle(.stoneGrey)
-                        
-                        Text("Hybrid").tag("Hybrid")
-                            .foregroundStyle(.stoneGrey)
-                        
-                        Text("Diesel").tag("Diesel")
-                            .foregroundStyle(.stoneGrey)
+                    if engineType == "Hybrid" {
+                        Section(header: Text("Hybrid Vehicle Information")) {
+                            TextField("CO2 Emissions (g/mi)", text: $co2Emission)
+                                .foregroundStyle(.deepBlue)
+                            
+                            TextField("Hybrid Fuel Efficiency (MPG)", text: $hybridEfficiency)
+                                .foregroundStyle(.deepBlue)
+                            
+                            TextField("Electric Range (miles)", text: $electricRange)
+                                .foregroundStyle(.deepBlue)
+                        }
                     }
-                    .pickerStyle(SegmentedPickerStyle())
                     
-                    TextField("Fuel Type", text: $fuelType)
-                        .foregroundStyle(.stoneGrey)
-                }
-                
-                if engineType == "Gasoline" {
-                    Section(header: Text("Gasoline Vehicle Information")) {
-                        TextField("Fuel Tank Capacity (gallons)", text: $fuelTankCapacity)
-                            .foregroundStyle(.stoneGrey)
-                        
-                        TextField("Fuel Consumption (MPG)", text: $fuelConsumptionMpg)
-                            .foregroundStyle(.stoneGrey)
-                        
-                        TextField("CO2 Emissions (g/mi)", text: $co2Emission)
-                            .foregroundStyle(.stoneGrey)
+                    if engineType == "Diesel" {
+                        Section(header: Text("Diesel Vehicle Information")) {
+                            TextField("Fuel Tank Capacity (gallons)", text: $fuelTankCapacity)
+                                .foregroundStyle(.deepBlue)
+                            
+                            TextField("Fuel Consumption (MPG)", text: $fuelConsumptionMpg)
+                                .foregroundStyle(.deepBlue)
+                            
+                            TextField("CO2 Emissions (g/mi)", text: $co2Emission)
+                                .foregroundStyle(.deepBlue)
+                        }
                     }
-                }
-                
-                if engineType == "Electric" {
-                    Section(header: Text("Electric Vehicle Information")) {
-                        TextField("Battery Capacity (kWh)", text: $batteryCapacityElectric)
-                            .foregroundStyle(.stoneGrey)
-                        
-                        TextField("EPA Electric Consumption (kWh/100mi)", text: $epaKwh100MiElectric)
-                            .foregroundStyle(.stoneGrey)
+                    
+                    Button("Save Vehicle") {
+                        if validateFields() {
+                            let car = Car(
+                                brand: brand,
+                                model: model,
+                                year: Int(year) ?? 0,
+                                engineType: engineType,
+                                fuelType: fuelType,
+                                fuelTankCapacity: Double(fuelTankCapacity) ?? 0,
+                                fuelConsumptionMpg: Double(fuelConsumptionMpg) ?? 0,
+                                co2Emission: Double(co2Emission) ?? 0,
+                                batteryCapacityElectric: Double(batteryCapacityElectric) ?? 0,
+                                epaKwh100MiElectric: Double(epaKwh100MiElectric) ?? 0,
+                                hybridEfficiency: Double(hybridEfficiency) ?? 0,
+                                electricRange: Double(electricRange) ?? 0
+                            )
+                            saveVehicleToFirestore(car: car)
+                            onAddCar(car)
+                        } else {
+                            showAlert = true
+                        }
                     }
+                    .foregroundStyle(.deepBlue)
                 }
-                
-                if engineType == "Hybrid" {
-                    Section(header: Text("Hybrid Vehicle Information")) {
-                        TextField("CO2 Emissions (g/mi)", text: $co2Emission)
-                            .foregroundStyle(.stoneGrey)
-                        
-                        TextField("Hybrid Fuel Efficiency (MPG)", text: $hybridEfficiency)
-                            .foregroundStyle(.stoneGrey)
-                        
-                        TextField("Electric Range (miles)", text: $electricRange)
-                            .foregroundStyle(.stoneGrey)
-                    }
-                }
-                
-                if engineType == "Diesel" {
-                    Section(header: Text("Diesel Vehicle Information")) {
-                        TextField("Fuel Tank Capacity (gallons)", text: $fuelTankCapacity)
-                            .foregroundStyle(.stoneGrey)
-                        
-                        TextField("Fuel Consumption (MPG)", text: $fuelConsumptionMpg)
-                            .foregroundStyle(.stoneGrey)
-                        
-                        TextField("CO2 Emissions (g/mi)", text: $co2Emission)
-                            .foregroundStyle(.stoneGrey)
-                    }
-                }
-                
-                Button("Save Vehicle") {
-                    if validateFields() {
-                        let car = Car(
-                            brand: brand,
-                            model: model,
-                            year: Int(year) ?? 0,
-                            engineType: engineType,
-                            fuelType: fuelType,
-                            fuelTankCapacity: Double(fuelTankCapacity) ?? 0,
-                            fuelConsumptionMpg: Double(fuelConsumptionMpg) ?? 0,
-                            co2Emission: Double(co2Emission) ?? 0,
-                            batteryCapacityElectric: Double(batteryCapacityElectric) ?? 0,
-                            epaKwh100MiElectric: Double(epaKwh100MiElectric) ?? 0,
-                            hybridEfficiency: Double(hybridEfficiency) ?? 0,
-                            electricRange: Double(electricRange) ?? 0
-                        )
-                        saveVehicleToFirestore(car: car)
-                        onAddCar(car)
-                    } else {
-                        showAlert = true
-                    }
-                }
-                .foregroundStyle(.deepBlue)
             }
             .background(Color(.systemBackground))
             .toolbar {
@@ -144,6 +148,9 @@ struct AddVehicleDetailsView: View {
             .foregroundStyle(.stoneGrey)
             .alert(isPresented: $showAlert) {
                 Alert(title: Text("Missing Information"), message: Text("Please fill in all fields before saving."), dismissButton: .default(Text("OK")))
+            }
+            .onTapGesture {
+                endEditing()
             }
         }
     }
@@ -192,6 +199,9 @@ struct AddVehicleDetailsView: View {
                 }
             }
         }
+    }
+    private func endEditing() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
 
