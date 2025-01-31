@@ -238,7 +238,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "Travel Buddy";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Travel Buddy requires access to your location even when the app is in the background to provide continuous navigation updates.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Travel Buddy uses your location to provide navigation and find nearby gas stations.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Travel Buddy uses your location to calculate distance to your desired destinations.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -277,7 +277,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "Travel Buddy";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Travel Buddy requires access to your location even when the app is in the background to provide continuous navigation updates.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Travel Buddy uses your location to provide navigation and find nearby gas stations.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Travel Buddy uses your location to calculate distance to your desired destinations.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
