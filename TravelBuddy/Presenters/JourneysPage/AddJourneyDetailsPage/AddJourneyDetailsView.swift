@@ -16,6 +16,8 @@ struct AddJourneyDetailsView: View {
     @State private var showDatePicker = false
     @State private var formattedDate: String = ""
     
+    @StateObject private var viewModel = AddJourneyDetailsViewModel()
+    
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd/MM/yyyy"
@@ -88,15 +90,7 @@ struct AddJourneyDetailsView: View {
                     }
                     
                     Section(header: Text("Choose Route")) {
-                        TextField("Enter start location", text: $journeyName)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .foregroundStyle(.deepBlue)
-                        
-                        TextField("Enter destination", text: $journeyName)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .foregroundStyle(.deepBlue)
-                        
-                        Map()
+                        Map(coordinateRegion: $viewModel.region, showsUserLocation: true)
                             .frame(height: 300)
                             .cornerRadius(8)
                             .shadow(color: Color.primaryBlack.opacity(0.25), radius: 4, x: 2, y: 2)
@@ -121,11 +115,11 @@ struct AddJourneyDetailsView: View {
             }
         }
     }
+    
     private func endEditing() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
-
 
 #Preview {
     AddJourneyDetailsView()
