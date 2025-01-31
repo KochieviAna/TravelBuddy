@@ -29,6 +29,7 @@ struct AddJourneyDetailsView: View {
             ZStack {
                 Color(.systemBackground)
                     .edgesIgnoringSafeArea(.all)
+                
                 Form {
                     Section(header: Text("Journey Details")) {
                         VStack(alignment: .leading) {
@@ -90,15 +91,42 @@ struct AddJourneyDetailsView: View {
                     }
                     
                     Section(header: Text("Choose Route")) {
-                        Map(coordinateRegion: $viewModel.region, showsUserLocation: true)
+                        ZStack {
+                            Map(coordinateRegion: $viewModel.region,
+                                showsUserLocation: true,
+                                annotationItems: viewModel.pinnedLocations) { location in
+                                MapAnnotation(coordinate: location.coordinate) {
+                                    Image(systemName: "mappin.circle.fill")
+                                        .resizable()
+                                        .foregroundColor(.burgundyRed)
+                                        .frame(width: 30, height: 30)
+                                }
+                            }
                             .frame(height: 300)
                             .cornerRadius(8)
                             .shadow(color: Color.primaryBlack.opacity(0.25), radius: 4, x: 2, y: 2)
+                            .gesture(
+                                DragGesture(minimumDistance: 0)
+                                    .onEnded { value in
+                                        let location = convertTapToLocation(value.location, in: viewModel.region)
+                                        viewModel.pinLocation(at: location)
+                                    }
+                            )
+                            
+                            if let distance = viewModel.distanceToPin {
+                                Text("Distance: \(String(format: "%.2f", distance)) km")
+                                    .font(.robotoRegular(size: 16))
+                                    .foregroundColor(.deepBlue)
+                                    .padding(8)
+                                    .background(Color.white.opacity(0.8))
+                                    .cornerRadius(8)
+                                    .padding()
+                            }
+                        }
                     }
                 }
                 .background(Color(.systemBackground))
             }
-            .background(Color(.systemBackground))
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("Add Journey")
@@ -118,6 +146,19 @@ struct AddJourneyDetailsView: View {
     
     private func endEditing() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+    
+    private func convertTapToLocation(_ tapLocation: CGPoint, in region: MKCoordinateRegion) -> CLLocationCoordinate2D {
+        let span = region.span
+        let center = region.center
+        
+        let mapWidth = UIScreen.main.bounds.width
+        let mapHeight: CGFloat = 300 // Same height as the map view
+        
+        let longitude = center.longitude + (Double(tapLocation.x / mapWidth) - 0.5) * span.longitudeDelta
+        let latitude = center.latitude - (Double(tapLocation.y / mapHeight) - 0.5) * span.latitudeDelta
+        
+        return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
     }
 }
 
