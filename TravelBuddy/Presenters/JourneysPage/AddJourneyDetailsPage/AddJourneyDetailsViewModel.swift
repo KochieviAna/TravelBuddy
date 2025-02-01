@@ -9,7 +9,6 @@ import Foundation
 import MapKit
 import CoreLocation
 
-// Struct to hold pinned locations
 struct PinnedLocation: Identifiable {
     let id = UUID()
     let coordinate: CLLocationCoordinate2D
@@ -22,7 +21,7 @@ class AddJourneyDetailsViewModel: ObservableObject {
     
     @Published var pinnedLocations: [PinnedLocation] = []
     @Published var userLocation: CLLocationCoordinate2D?
-    @Published var distanceToPin: Double? // Distance in meters
+    @Published var distanceToPin: Double?
     
     private var locationManager = LocationManager.shared
 
@@ -41,7 +40,7 @@ class AddJourneyDetailsViewModel: ObservableObject {
     
     func pinLocation(at coordinate: CLLocationCoordinate2D) {
         let newPin = PinnedLocation(coordinate: coordinate)
-        pinnedLocations = [newPin] // Store only one pin at a time
+        pinnedLocations = [newPin]
         calculateDistance()
     }
     
@@ -54,6 +53,6 @@ class AddJourneyDetailsViewModel: ObservableObject {
         let userLocation = CLLocation(latitude: userLoc.latitude, longitude: userLoc.longitude)
         let pinnedLocation = CLLocation(latitude: pinnedLoc.latitude, longitude: pinnedLoc.longitude)
         
-        distanceToPin = userLocation.distance(from: pinnedLocation) / 1000 // Convert to km
+        distanceToPin = userLocation.distance(from: pinnedLocation) / 1000
     }
 }

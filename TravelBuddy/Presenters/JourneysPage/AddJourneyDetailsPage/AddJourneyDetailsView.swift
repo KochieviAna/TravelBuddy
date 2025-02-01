@@ -12,7 +12,7 @@ import FirebaseAuth
 
 struct AddJourneyDetailsView: View {
     
-    @Environment(\.dismiss) var dismiss // For dismissing the modal view
+    @Environment(\.dismiss) var dismiss
     
     @State private var journeyName = ""
     @State private var journeyDescription = ""
@@ -41,17 +41,17 @@ struct AddJourneyDetailsView: View {
                     Section(header: Text("Journey Details")) {
                         VStack(alignment: .leading) {
                             Text("Name Journey")
-                                .foregroundColor(.deepBlue)
+                                .foregroundStyle(.deepBlue)
                                 .font(.robotoRegular(size: 16))
                             
                             TextField("Journey name", text: $journeyName)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .foregroundColor(.deepBlue)
+                                .foregroundStyle(.deepBlue)
                         }
                         
                         VStack(alignment: .leading) {
                             Text("Description")
-                                .foregroundColor(.deepBlue)
+                                .foregroundStyle(.deepBlue)
                                 .font(.robotoRegular(size: 16))
                             
                             TextEditor(text: $journeyDescription)
@@ -66,13 +66,13 @@ struct AddJourneyDetailsView: View {
                         
                         VStack(alignment: .leading) {
                             Text("Set Date")
-                                .foregroundColor(.deepBlue)
+                                .foregroundStyle(.deepBlue)
                                 .font(.robotoRegular(size: 16))
                             
                             HStack {
                                 TextField("DD/MM/YYYY", text: $formattedDate)
-                                    .foregroundColor(.stoneGrey)
-                                    .disabled(true) // Prevent manual input
+                                    .foregroundStyle(.stoneGrey)
+                                    .disabled(true)
                                 
                                 Button(action: {
                                     showDatePicker.toggle()
@@ -119,12 +119,7 @@ struct AddJourneyDetailsView: View {
                     Button("Save Journey") {
                         saveJourneyToFirestore()
                     }
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.blue)
-                    .cornerRadius(10)
-                    .padding(.top)
+                    .foregroundStyle(.deepBlue)
                 }
                 .background(Color(.systemBackground))
             }
@@ -135,7 +130,7 @@ struct AddJourneyDetailsView: View {
                         .foregroundColor(.deepBlue)
                 }
             }
-            .foregroundColor(.stoneGrey)
+            .foregroundStyle(.stoneGrey)
             .onAppear {
                 formattedDate = dateFormatter.string(from: journeyDate)
             }
@@ -175,13 +170,35 @@ struct AddJourneyDetailsView: View {
             return
         }
         
-        guard !journeyName.isEmpty, !journeyDescription.isEmpty else {
-            alertMessage = "Please fill in all fields!"
+        let distance = viewModel.distanceToPin ?? 0.0
+        
+        // ✅ **Validation: All fields are required**
+        if journeyName.isEmpty {
+            alertMessage = "Please enter a journey name."
+            showAlert = true
+            return
+        }
+        if journeyDescription.isEmpty {
+            alertMessage = "Please enter a journey description."
+            showAlert = true
+            return
+        }
+        if formattedDate.isEmpty {
+            alertMessage = "Please select a date."
+            showAlert = true
+            return
+        }
+        if viewModel.pinnedLocations.isEmpty {
+            alertMessage = "Please set at least one pin on the map."
+            showAlert = true
+            return
+        }
+        if distance <= 0 {
+            alertMessage = "Invalid distance. Please check your pinned location."
             showAlert = true
             return
         }
         
-        let distance = viewModel.distanceToPin ?? 0.0
         let db = Firestore.firestore()
         
         db.collection("users").document(userId).collection("journeys").addDocument(data: [
@@ -196,7 +213,7 @@ struct AddJourneyDetailsView: View {
                 showAlert = true
             } else {
                 print("Journey successfully saved to Firestore!")
-                dismiss() // Dismiss the modal after saving
+                dismiss()
             }
         }
     }
