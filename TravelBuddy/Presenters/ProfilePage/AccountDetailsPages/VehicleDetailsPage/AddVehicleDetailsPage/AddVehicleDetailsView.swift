@@ -6,27 +6,10 @@
 //
 
 import SwiftUI
-import FirebaseFirestore
-import FirebaseAuth
 
 struct AddVehicleDetailsView: View {
-    
+    @StateObject private var viewModel = AddVehicleDetailsViewModel()
     var onAddCar: (Car) -> Void
-    
-    @State private var brand = ""
-    @State private var model = ""
-    @State private var year = ""
-    @State private var engineType = "Gasoline"
-    @State private var fuelType = ""
-    @State private var fuelTankCapacity = ""
-    @State private var fuelConsumptionMpg = ""
-    @State private var co2Emission = ""
-    @State private var batteryCapacityElectric = ""
-    @State private var epaKwh100MiElectric = ""
-    @State private var hybridEfficiency = ""
-    @State private var electricRange = ""
-    
-    @State private var showAlert = false
     
     var body: some View {
         NavigationView {
@@ -35,103 +18,50 @@ struct AddVehicleDetailsView: View {
                     .edgesIgnoringSafeArea(.all)
                 Form {
                     Section(header: Text("General Information")) {
-                        TextField("Brand", text: $brand)
+                        TextField("Brand", text: $viewModel.brand)
                             .foregroundStyle(.deepBlue)
                         
-                        TextField("Model", text: $model)
+                        TextField("Model", text: $viewModel.model)
                             .foregroundStyle(.deepBlue)
                         
-                        TextField("Year", text: $year)
+                        TextField("Year", text: $viewModel.year)
                             .foregroundStyle(.deepBlue)
                         
-                        Picker("Engine Type", selection: $engineType) {
+                        Picker("Engine Type", selection: $viewModel.engineType) {
                             Text("Gasoline").tag("Gasoline")
-                                .foregroundStyle(.deepBlue)
-                            
                             Text("Electric").tag("Electric")
-                                .foregroundStyle(.deepBlue)
-                            
                             Text("Hybrid").tag("Hybrid")
-                                .foregroundStyle(.deepBlue)
-                            
                             Text("Diesel").tag("Diesel")
-                                .foregroundStyle(.deepBlue)
                         }
                         .pickerStyle(SegmentedPickerStyle())
                         
-                        TextField("Fuel Type", text: $fuelType)
+                        TextField("Fuel Type", text: $viewModel.fuelType)
                             .foregroundStyle(.deepBlue)
                     }
                     
-                    if engineType == "Gasoline" {
-                        Section(header: Text("Gasoline Vehicle Information")) {
-                            TextField("Fuel Tank Capacity (gallons)", text: $fuelTankCapacity)
-                                .foregroundStyle(.deepBlue)
-                            
-                            TextField("Fuel Consumption (MPG)", text: $fuelConsumptionMpg)
-                                .foregroundStyle(.deepBlue)
-                            
-                            TextField("CO2 Emissions (g/mi)", text: $co2Emission)
-                                .foregroundStyle(.deepBlue)
-                        }
+                    if viewModel.engineType == "Gasoline" {
+                        fuelFields
                     }
                     
-                    if engineType == "Electric" {
-                        Section(header: Text("Electric Vehicle Information")) {
-                            TextField("Battery Capacity (kWh)", text: $batteryCapacityElectric)
-                                .foregroundStyle(.deepBlue)
-                            
-                            TextField("EPA Electric Consumption (kWh/100mi)", text: $epaKwh100MiElectric)
-                                .foregroundStyle(.deepBlue)
-                        }
+                    if viewModel.engineType == "Electric" {
+                        electricFields
                     }
                     
-                    if engineType == "Hybrid" {
-                        Section(header: Text("Hybrid Vehicle Information")) {
-                            TextField("CO2 Emissions (g/mi)", text: $co2Emission)
-                                .foregroundStyle(.deepBlue)
-                            
-                            TextField("Hybrid Fuel Efficiency (MPG)", text: $hybridEfficiency)
-                                .foregroundStyle(.deepBlue)
-                            
-                            TextField("Electric Range (miles)", text: $electricRange)
-                                .foregroundStyle(.deepBlue)
-                        }
+                    if viewModel.engineType == "Hybrid" {
+                        hybridFields
                     }
                     
-                    if engineType == "Diesel" {
-                        Section(header: Text("Diesel Vehicle Information")) {
-                            TextField("Fuel Tank Capacity (gallons)", text: $fuelTankCapacity)
-                                .foregroundStyle(.deepBlue)
-                            
-                            TextField("Fuel Consumption (MPG)", text: $fuelConsumptionMpg)
-                                .foregroundStyle(.deepBlue)
-                            
-                            TextField("CO2 Emissions (g/mi)", text: $co2Emission)
-                                .foregroundStyle(.deepBlue)
-                        }
+                    if viewModel.engineType == "Diesel" {
+                        fuelFields
                     }
                     
                     Button("Save Vehicle") {
-                        if validateFields() {
-                            let car = Car(
-                                brand: brand,
-                                model: model,
-                                year: Int(year) ?? 0,
-                                engineType: engineType,
-                                fuelType: fuelType,
-                                fuelTankCapacity: Double(fuelTankCapacity) ?? 0,
-                                fuelConsumptionMpg: Double(fuelConsumptionMpg) ?? 0,
-                                co2Emission: Double(co2Emission) ?? 0,
-                                batteryCapacityElectric: Double(batteryCapacityElectric) ?? 0,
-                                epaKwh100MiElectric: Double(epaKwh100MiElectric) ?? 0,
-                                hybridEfficiency: Double(hybridEfficiency) ?? 0,
-                                electricRange: Double(electricRange) ?? 0
-                            )
-                            saveVehicleToFirestore(car: car)
-                            onAddCar(car)
+                        if viewModel.validateFields() {
+                            viewModel.saveVehicleToFirestore { car in
+                                onAddCar(car)
+                            }
                         } else {
-                            showAlert = true
+                            viewModel.showAlert = true
                         }
                     }
                     .foregroundStyle(.deepBlue)
@@ -145,8 +75,7 @@ struct AddVehicleDetailsView: View {
                         .foregroundColor(.deepBlue)
                 }
             }
-            .foregroundStyle(.stoneGrey)
-            .alert(isPresented: $showAlert) {
+            .alert(isPresented: $viewModel.showAlert) {
                 Alert(title: Text("Missing Information"), message: Text("Please fill in all fields before saving."), dismissButton: .default(Text("OK")))
             }
             .onTapGesture {
@@ -155,51 +84,42 @@ struct AddVehicleDetailsView: View {
         }
     }
     
-    private func validateFields() -> Bool {
-        return !brand.isEmpty && !model.isEmpty && !year.isEmpty && !fuelType.isEmpty &&
-        (!fuelTankCapacity.isEmpty || engineType == "Electric" || engineType == "Diesel") &&
-        !fuelConsumptionMpg.isEmpty && !co2Emission.isEmpty &&
-        (engineType != "Electric" || (!batteryCapacityElectric.isEmpty && !epaKwh100MiElectric.isEmpty)) &&
-        (engineType != "Hybrid" || (!hybridEfficiency.isEmpty && !electricRange.isEmpty)) &&
-        (engineType != "Diesel" || !fuelTankCapacity.isEmpty)
+    private var fuelFields: some View {
+        Section(header: Text("Fuel Vehicle Information")) {
+            TextField("Fuel Tank Capacity (gallons)", text: $viewModel.fuelTankCapacity)
+                .foregroundStyle(.deepBlue)
+            
+            TextField("Fuel Consumption (MPG)", text: $viewModel.fuelConsumptionMpg)
+                .foregroundStyle(.deepBlue)
+            
+            TextField("CO2 Emissions (g/mi)", text: $viewModel.co2Emission)
+                .foregroundStyle(.deepBlue)
+        }
     }
     
-    private func saveVehicleToFirestore(car: Car) {
-        let db = Firestore.firestore()
-        
-        guard let userId = Auth.auth().currentUser?.uid else {
-            print("No user is logged in")
-            return
-        }
-        
-        var ref: DocumentReference? = nil
-        ref = db.collection("users").document(userId).collection("vehicles").addDocument(data: [
-            "brand": car.brand,
-            "model": car.model,
-            "year": car.year,
-            "engineType": car.engineType,
-            "fuelType": car.fuelType,
-            "fuelTankCapacity": car.fuelTankCapacity,
-            "fuelConsumptionMpg": car.fuelConsumptionMpg,
-            "co2Emission": car.co2Emission,
-            "batteryCapacityElectric": car.batteryCapacityElectric,
-            "epaKwh100MiElectric": car.epaKwh100MiElectric,
-            "hybridEfficiency": car.hybridEfficiency,
-            "electricRange": car.electricRange
-        ]) { error in
-            if let error = error {
-                print("Error adding vehicle to Firestore: \(error)")
-            } else {
-                print("Vehicle successfully added to Firestore!")
-                if let id = ref?.documentID {
-                    print("Saved Vehicle ID: \(id)")
-                    var updatedCar = car
-                    updatedCar.id = id
-                    onAddCar(updatedCar)
-                }
-            }
+    private var electricFields: some View {
+        Section(header: Text("Electric Vehicle Information")) {
+            TextField("Battery Capacity (kWh)", text: $viewModel.batteryCapacityElectric)
+                .foregroundStyle(.deepBlue)
+            
+            TextField("EPA Electric Consumption (kWh/100mi)", text: $viewModel.epaKwh100MiElectric)
+                .foregroundStyle(.deepBlue)
         }
     }
+    
+    private var hybridFields: some View {
+        Section(header: Text("Hybrid Vehicle Information")) {
+            TextField("CO2 Emissions (g/mi)", text: $viewModel.co2Emission)
+                .foregroundStyle(.deepBlue)
+            
+            TextField("Hybrid Fuel Efficiency (MPG)", text: $viewModel.hybridEfficiency)
+                .foregroundStyle(.deepBlue)
+            
+            TextField("Electric Range (miles)", text: $viewModel.electricRange)
+                .foregroundStyle(.deepBlue)
+        }
+    }
+    
     private func endEditing() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }

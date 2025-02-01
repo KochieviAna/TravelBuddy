@@ -15,7 +15,7 @@ struct JourneyArchivesView: View {
     
     var onSelectJourney: (ArchivedJourney) -> Void
     @Environment(\.presentationMode) var presentationMode
-
+    
     var body: some View {
         VStack {
             HStack {
@@ -23,12 +23,12 @@ struct JourneyArchivesView: View {
                     presentationMode.wrappedValue.dismiss()
                 }
                 .frame(width: 44, height: 44)
-
+                
                 Spacer()
             }
             .background(Color(.systemBackground))
             .padding(.leading)
-
+            
             List(archivedJourneys) { journey in
                 Button(action: {
                     onSelectJourney(journey)
@@ -56,7 +56,7 @@ struct JourneyArchivesView: View {
     
     private func fetchArchivedJourneys() {
         guard let userId = Auth.auth().currentUser?.uid else { return }
-
+        
         db.collection("users").document(userId).collection("archivedJourneys")
             .order(by: "date", descending: true)
             .getDocuments { snapshot, error in
