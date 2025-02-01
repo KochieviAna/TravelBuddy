@@ -128,7 +128,7 @@ final class SignInVC: UIViewController {
         button.setTitle(" Sign in with Google", for: .normal)
         button.setTitleColor(.deepBlue.withAlphaComponent(0.5), for: .normal)
         button.titleLabel?.font = .robotoMedium(size: 20)
-        button.backgroundColor = .primaryWhite
+        button.backgroundColor = .white
         button.layer.cornerRadius = 20
         button.clipsToBounds = false
         
@@ -140,7 +140,7 @@ final class SignInVC: UIViewController {
         
         button.imageView?.contentMode = .scaleAspectFit
         
-        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowColor = UIColor.primaryBlack.cgColor
         button.layer.shadowOpacity = 0.2
         button.layer.shadowOffset = CGSize(width: 0, height: 4)
         button.layer.shadowRadius = 3
@@ -158,7 +158,7 @@ final class SignInVC: UIViewController {
         button.setTitle(" Sign in with Apple", for: .normal)
         button.setTitleColor(.primaryWhite, for: .normal)
         button.titleLabel?.font = .robotoMedium(size: 20)
-        button.backgroundColor = .black
+        button.backgroundColor = .primaryBlack
         button.layer.cornerRadius = 20
         button.clipsToBounds = false
         
@@ -167,7 +167,7 @@ final class SignInVC: UIViewController {
         button.imageView?.contentMode = .scaleAspectFit
         button.tintColor = .primaryWhite
         
-        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowColor = UIColor.primaryBlack.cgColor
         button.layer.shadowOpacity = 0.2
         button.layer.shadowOffset = CGSize(width: 0, height: 4)
         button.layer.shadowRadius = 3

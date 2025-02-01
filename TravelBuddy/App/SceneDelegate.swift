@@ -5,6 +5,7 @@
 //  Created by MacBook on 15.01.25.
 //
 
+
 import UIKit
 import FirebaseAuth
 
@@ -17,7 +18,11 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: scene)
 
-        if Auth.auth().currentUser != nil {
+        // ✅ Check if user has seen the introduction
+        if !UserDefaults.standard.bool(forKey: "hasSeenIntroduction") {
+            print("📌 Showing Introduction Screen")
+            window?.rootViewController = UINavigationController(rootViewController: IntroductionVC())
+        } else if Auth.auth().currentUser != nil {
             print("✅ User is already logged in: \(Auth.auth().currentUser?.email ?? "No Email")")
             window?.rootViewController = TabBarController()
         } else {

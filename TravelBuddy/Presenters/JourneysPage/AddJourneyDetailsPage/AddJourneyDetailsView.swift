@@ -109,7 +109,7 @@ struct AddJourneyDetailsView: View {
                                     .font(.robotoRegular(size: 16))
                                     .foregroundColor(.deepBlue)
                                     .padding(8)
-                                    .background(Color.white.opacity(0.8))
+                                    .background(Color.primaryWhite.opacity(0.8))
                                     .cornerRadius(8)
                                     .padding()
                             }

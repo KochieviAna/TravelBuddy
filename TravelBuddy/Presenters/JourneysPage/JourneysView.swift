@@ -39,7 +39,7 @@ struct JourneysView: View {
                 .frame(width: 200, height: 200)
                 .opacity(0.5)
             
-            Button("Start Journey with Travel Buddy") {
+            Button("Start Journey with your Travel Buddy") {
                 if viewModel.vehicle == nil {
                     viewModel.showVehicleAlert = true
                 } else {

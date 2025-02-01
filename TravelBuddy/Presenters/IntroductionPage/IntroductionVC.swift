@@ -57,14 +57,14 @@ final class IntroductionVC: UIViewController {
         introductionView.titleLabel.text = page.title
         introductionView.descriptionLabel.text = page.description
         introductionView.actionButton.setTitle(page.buttonTitle, for: .normal)
-
+        
         introductionView.titleLabel.font = UIFont.systemFont(ofSize: page.titleFontSize, weight: .bold)
         introductionView.descriptionLabel.font = UIFont.systemFont(ofSize: page.descriptionFontSize, weight: .regular)
-
+        
         introductionView.pageControl.numberOfPages = viewModel.pages.count - 1
-
+        
         introductionView.pageControl.currentPage = max(0, viewModel.currentPage - 1)
-
+        
         introductionView.pageControl.isHidden = viewModel.currentPage == 0
     }
     
@@ -72,8 +72,9 @@ final class IntroductionVC: UIViewController {
         if viewModel.isLastPage {
             UserDefaults.standard.set(true, forKey: "hasSeenIntroduction")
             
-            let signInVC = SignInVC()
-            navigationController?.pushViewController(signInVC, animated: true)
+            let sceneDelegate = UIApplication.shared.connectedScenes
+                .first?.delegate as? SceneDelegate
+            sceneDelegate?.switchToSignInVC()
         } else {
             viewModel.moveToNextPage { [weak self] in
                 DispatchQueue.main.async {
