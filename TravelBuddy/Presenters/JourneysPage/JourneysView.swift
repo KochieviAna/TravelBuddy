@@ -42,7 +42,6 @@ struct JourneysView: View {
         }
     }
     
-    // MARK: - Fetch Journey Data
     private func fetchJourney() {
         guard let userId = Auth.auth().currentUser?.uid else { return }
         
@@ -62,7 +61,6 @@ struct JourneysView: View {
             }
     }
     
-    // MARK: - Fetch Vehicle Data
     private func fetchVehicle() {
         guard let userId = Auth.auth().currentUser?.uid else { return }
         
@@ -83,7 +81,6 @@ struct JourneysView: View {
             }
     }
     
-    // MARK: - Empty View (Centered)
     private var emptyView: some View {
         VStack {
             Spacer()
@@ -109,7 +106,6 @@ struct JourneysView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
-    // MARK: - Journey View with Fixed Bottom Button
     private func journeyContentView(for journey: Journey, vehicle: Car) -> some View {
         VStack {
             ScrollView {
@@ -307,25 +303,24 @@ struct JourneysView: View {
             electricConsumption: calculateElectricConsumption(distance: journey.distanceKm, vehicle: vehicle),
             chargingSessions: calculateChargingSessions(distance: journey.distanceKm, vehicle: vehicle),
             hybridFuelNeeded: calculateHybridFuelNeeded(distance: journey.distanceKm, vehicle: vehicle),
-            electricRangeUsed: calculateElectricRangeUsed(distance: journey.distanceKm, vehicle: vehicle)
+            electricRangeUsed: calculateElectricRangeUsed(distance: journey.distanceKm, vehicle: vehicle),
+            vehicle: vehicle
         )
-
+        
         let db = Firestore.firestore()
         
-        // Save Archived Journey Separately
         do {
             let archivedData = try Firestore.Encoder().encode(archivedJourney)
             db.collection("users").document(userId).collection("archivedJourneys").addDocument(data: archivedData) { error in
                 if let error = error {
                     print("Error archiving journey: \(error)")
                 } else {
-                    // Remove from Active Journeys
                     db.collection("users").document(userId).collection("journeys").document(journey.id ?? "").delete { error in
                         if let error = error {
                             print("Error deleting journey: \(error)")
                         } else {
                             DispatchQueue.main.async {
-                                self.journey = nil // Remove from View
+                                self.journey = nil
                             }
                         }
                     }

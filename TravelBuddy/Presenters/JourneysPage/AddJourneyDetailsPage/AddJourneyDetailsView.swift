@@ -96,13 +96,13 @@ struct AddJourneyDetailsView: View {
                                         .frame(width: 30, height: 30)
                                 }
                             }
-                            .frame(height: 300)
-                            .cornerRadius(8)
-                            .shadow(color: Color.primaryBlack.opacity(0.25), radius: 4, x: 2, y: 2)
-                            .onLongPressGesture {
-                                let location = viewModel.region.center
-                                viewModel.pinLocation(at: location)
-                            }
+                                .frame(height: 300)
+                                .cornerRadius(8)
+                                .shadow(color: Color.primaryBlack.opacity(0.25), radius: 4, x: 2, y: 2)
+                                .onLongPressGesture {
+                                    let location = viewModel.region.center
+                                    viewModel.pinLocation(at: location)
+                                }
                             
                             if let distance = viewModel.distanceToPin {
                                 Text("Distance: \(String(format: "%.2f", distance)) km")

@@ -26,6 +26,7 @@ struct JourneyArchivesView: View {
 
                 Spacer()
             }
+            .background(Color(.systemBackground))
             .padding(.leading)
 
             List(archivedJourneys) { journey in
@@ -34,16 +35,20 @@ struct JourneyArchivesView: View {
                 }) {
                     VStack(alignment: .leading) {
                         Text(journey.journeyName)
-                            .font(.headline)
+                            .font(.robotoSemiBold(size: 15))
+                            .foregroundColor(.deepBlue)
+                        
                         Text("Date: \(formattedDate(from: journey.date))")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
+                            .font(.robotoRegular(size: 14))
+                            .foregroundColor(.deepBlue)
                     }
                 }
             }
+            .background(Color(.systemBackground))
         }
-        .navigationBarHidden(true) // Completely disable navigation bar
-        .navigationBarBackButtonHidden(true) // Hide default back button
+        .background(Color(.systemBackground))
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
         .onAppear {
             fetchArchivedJourneys()
         }

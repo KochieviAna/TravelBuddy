@@ -24,7 +24,7 @@ class AddJourneyDetailsViewModel: ObservableObject {
     @Published var distanceToPin: Double?
     
     private var locationManager = LocationManager.shared
-
+    
     init() {
         checkIfLocationServicesEnabled()
     }

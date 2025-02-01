@@ -22,4 +22,6 @@ struct ArchivedJourney: Identifiable, Codable {
     var chargingSessions: String?
     var hybridFuelNeeded: String?
     var electricRangeUsed: String?
+    
+    var vehicle: Car?
 }
