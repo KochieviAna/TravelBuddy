@@ -119,8 +119,14 @@ struct JourneysView: View {
         VStack {
             HStack {
                 Text("Distance")
+                    .font(.robotoRegular(size: 16))
+                    .foregroundStyle(.stoneGrey)
+                
                 Spacer()
+                
                 Text("\(String(format: "%.2f", journey.distanceKm)) KM")
+                    .font(.robotoRegular(size: 16))
+                    .foregroundStyle(.stoneGrey)
             }
             
             switch vehicle.engineType {
@@ -140,18 +146,36 @@ struct JourneysView: View {
         VStack {
             HStack {
                 Text("Gallons Needed")
+                    .font(.robotoRegular(size: 16))
+                    .foregroundStyle(.stoneGrey)
+                
                 Spacer()
+                
                 Text(viewModel.calculateFuelNeeded(distance: journey.distanceKm, vehicle: vehicle))
+                    .font(.robotoRegular(size: 16))
+                    .foregroundStyle(.stoneGrey)
             }
             HStack {
                 Text("Tank Re-Fill")
+                    .font(.robotoRegular(size: 16))
+                    .foregroundStyle(.stoneGrey)
+                
                 Spacer()
+                
                 Text(viewModel.calculateTankRefill(distance: journey.distanceKm, vehicle: vehicle))
+                    .font(.robotoRegular(size: 16))
+                    .foregroundStyle(.stoneGrey)
             }
             HStack {
                 Text("CO2 Emissions")
+                    .font(.robotoRegular(size: 16))
+                    .foregroundStyle(.stoneGrey)
+                
                 Spacer()
+                
                 Text(viewModel.calculateCO2Emissions(distance: journey.distanceKm, vehicle: vehicle))
+                    .font(.robotoRegular(size: 16))
+                    .foregroundStyle(.stoneGrey)
             }
         }
     }
@@ -160,13 +184,25 @@ struct JourneysView: View {
         VStack {
             HStack {
                 Text("Battery Needed")
+                    .font(.robotoRegular(size: 16))
+                    .foregroundStyle(.stoneGrey)
+                
                 Spacer()
+                
                 Text(viewModel.calculateElectricConsumption(distance: journey.distanceKm, vehicle: vehicle))
+                    .font(.robotoRegular(size: 16))
+                    .foregroundStyle(.stoneGrey)
             }
             HStack {
                 Text("Charging Sessions")
+                    .font(.robotoRegular(size: 16))
+                    .foregroundStyle(.stoneGrey)
+                
                 Spacer()
+                
                 Text(viewModel.calculateChargingSessions(distance: journey.distanceKm, vehicle: vehicle))
+                    .font(.robotoRegular(size: 16))
+                    .foregroundStyle(.stoneGrey)
             }
         }
     }
@@ -175,18 +211,36 @@ struct JourneysView: View {
         VStack {
             HStack {
                 Text("Hybrid Fuel Needed")
+                    .font(.robotoRegular(size: 16))
+                    .foregroundStyle(.stoneGrey)
+                
                 Spacer()
+                
                 Text(viewModel.calculateHybridFuelNeeded(distance: journey.distanceKm, vehicle: vehicle))
+                    .font(.robotoRegular(size: 16))
+                    .foregroundStyle(.stoneGrey)
             }
             HStack {
                 Text("Electric Range Used")
+                    .font(.robotoRegular(size: 16))
+                    .foregroundStyle(.stoneGrey)
+                
                 Spacer()
+                
                 Text(viewModel.calculateElectricRangeUsed(distance: journey.distanceKm, vehicle: vehicle))
+                    .font(.robotoRegular(size: 16))
+                    .foregroundStyle(.stoneGrey)
             }
             HStack {
                 Text("Charging Sessions")
+                    .font(.robotoRegular(size: 16))
+                    .foregroundStyle(.stoneGrey)
+                
                 Spacer()
+                
                 Text(viewModel.calculateChargingSessions(distance: journey.distanceKm, vehicle: vehicle))
+                    .font(.robotoRegular(size: 16))
+                    .foregroundStyle(.stoneGrey)
             }
         }
     }

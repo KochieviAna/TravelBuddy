@@ -85,7 +85,7 @@ struct ProfileView: View {
                 }) {
                     ProfileListItem(imageName: item.imageName, text: item.text)
                 }
-                .background(Color("primaryWhite"))
+                .background(Color(.systemBackground))
                 .cornerRadius(10)
             }
         }
