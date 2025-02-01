@@ -9,14 +9,25 @@ import SwiftUI
 
 struct ArchivedJourneyDetailView: View {
     var journey: ArchivedJourney
-    
+    @Environment(\.presentationMode) var presentationMode
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading) {
+                HStack {
+                    ReusableBackButtonWrapper {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                    .frame(width: 44, height: 44)
+
+                    Spacer()
+                }
+                .padding(.leading)
+
                 Text("Travel Buddy")
                     .font(.title)
                     .bold()
-                
+
                 VStack(alignment: .leading) {
                     Text(journey.journeyName)
                         .font(.title2)
@@ -35,74 +46,10 @@ struct ArchivedJourneyDetailView: View {
                         .fill(Color(.systemBackground))
                         .shadow(radius: 2)
                 )
-                
-                // Archived Statistics
-                VStack {
-                    HStack {
-                        Text("Distance:")
-                        Spacer()
-                        Text("\(String(format: "%.2f", journey.distanceKm)) KM")
-                    }
-                    if let fuelNeeded = journey.fuelNeeded {
-                        HStack {
-                            Text("Fuel Needed:")
-                            Spacer()
-                            Text("\(fuelNeeded) Gallons")
-                        }
-                    }
-                    if let tankRefill = journey.tankRefill {
-                        HStack {
-                            Text("Tank Re-Fill:")
-                            Spacer()
-                            Text("\(tankRefill) Times")
-                        }
-                    }
-                    if let co2Emissions = journey.co2Emissions {
-                        HStack {
-                            Text("CO2 Emissions:")
-                            Spacer()
-                            Text("\(co2Emissions) g/km")
-                        }
-                    }
-                    if let electricConsumption = journey.electricConsumption {
-                        HStack {
-                            Text("Battery Needed:")
-                            Spacer()
-                            Text("\(electricConsumption) kWh")
-                        }
-                    }
-                    if let chargingSessions = journey.chargingSessions {
-                        HStack {
-                            Text("Charging Sessions:")
-                            Spacer()
-                            Text("\(chargingSessions) Times")
-                        }
-                    }
-                    if let hybridFuelNeeded = journey.hybridFuelNeeded {
-                        HStack {
-                            Text("Hybrid Fuel Needed:")
-                            Spacer()
-                            Text("\(hybridFuelNeeded) Gallons")
-                        }
-                    }
-                    if let electricRangeUsed = journey.electricRangeUsed {
-                        HStack {
-                            Text("Electric Range Used:")
-                            Spacer()
-                            Text("\(electricRangeUsed) Miles")
-                        }
-                    }
-                }
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 15)
-                        .fill(Color(.systemBackground))
-                        .shadow(radius: 2)
-                )
             }
             .padding()
         }
-        .navigationTitle("Archived Journey Details")
+        .navigationBarHidden(true) // Fully hide the navigation bar
     }
     
     private func formattedDate(from date: Date) -> String {

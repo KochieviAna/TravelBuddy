@@ -91,25 +91,37 @@ final class TabBarController: UITabBarController {
         }
 
         var destinationView: UIViewController?
-        
+
         switch detail {
         case "Personal Details":
-            destinationView = UIHostingController(rootView: PersonalDetailsView(
-                userName: userName,
-                userEmail: userEmail,
-                onChangePassword: { [weak self] in
-                    self?.navigateToForgotPassword()
-                }
-            ).navigationBarBackButtonHidden())
+            destinationView = UIHostingController(rootView:
+                PersonalDetailsView(
+                    userName: userName,
+                    userEmail: userEmail,
+                    onChangePassword: { [weak self] in
+                        self?.navigateToForgotPassword()
+                    }
+                )
+                .navigationBarHidden(true) // ✅ Ensures navigation bar is hidden
+            )
 
         case "Journey Archives":
             let journeyArchivesView = JourneyArchivesView { [weak self] archivedJourney in
                 self?.navigateToArchivedJourneyDetail(archivedJourney)
             }
-            destinationView = UIHostingController(rootView: journeyArchivesView)
+
+            // ✅ Correcting navigation bar hiding
+            let hostingController = UIHostingController(rootView: journeyArchivesView)
+            hostingController.navigationItem.hidesBackButton = true // Hide default back button
+            hostingController.navigationController?.setNavigationBarHidden(true, animated: false)
+
+            destinationView = hostingController
 
         case "Vehicle Details":
-            destinationView = UIHostingController(rootView: VehicleDetailsView().navigationBarBackButtonHidden())
+            destinationView = UIHostingController(rootView:
+                VehicleDetailsView()
+                    .navigationBarHidden(true) // ✅ Hide navigation bar
+            )
 
         default:
             return
@@ -128,7 +140,15 @@ final class TabBarController: UITabBarController {
             return
         }
 
-        let archivedDetailView = UIHostingController(rootView: ArchivedJourneyDetailView(journey: archivedJourney))
+        let archivedDetailView = UIHostingController(
+            rootView: ArchivedJourneyDetailView(journey: archivedJourney)
+                .navigationBarHidden(true)
+        )
+        
+        // ✅ Ensure back button is hidden
+        archivedDetailView.navigationItem.hidesBackButton = true
+        archivedDetailView.navigationController?.setNavigationBarHidden(true, animated: false)
+
         selectedNavController.pushViewController(archivedDetailView, animated: true)
     }
 

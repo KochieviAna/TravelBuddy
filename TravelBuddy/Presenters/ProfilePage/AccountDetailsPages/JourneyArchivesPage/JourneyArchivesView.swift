@@ -14,9 +14,20 @@ struct JourneyArchivesView: View {
     private let db = Firestore.firestore()
     
     var onSelectJourney: (ArchivedJourney) -> Void
-    
+    @Environment(\.presentationMode) var presentationMode
+
     var body: some View {
-        NavigationView {
+        VStack {
+            HStack {
+                ReusableBackButtonWrapper {
+                    presentationMode.wrappedValue.dismiss()
+                }
+                .frame(width: 44, height: 44)
+
+                Spacer()
+            }
+            .padding(.leading)
+
             List(archivedJourneys) { journey in
                 Button(action: {
                     onSelectJourney(journey)
@@ -30,12 +41,11 @@ struct JourneyArchivesView: View {
                     }
                 }
             }
-            .navigationTitle("Archived Journeys")
-            .foregroundStyle(.deepBlue)
-            .navigationBarBackButtonHidden(true)
-            .onAppear {
-                fetchArchivedJourneys()
-            }
+        }
+        .navigationBarHidden(true) // Completely disable navigation bar
+        .navigationBarBackButtonHidden(true) // Hide default back button
+        .onAppear {
+            fetchArchivedJourneys()
         }
     }
     

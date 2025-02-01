@@ -14,6 +14,8 @@ struct PersonalDetailsView: View {
     @State private var selectedImage: UIImage? = nil
     @State private var sourceType: UIImagePickerController.SourceType = .photoLibrary
     
+    @Environment(\.dismiss) var dismiss
+    
     var userName: String
     var userEmail: String
     var onChangePassword: () -> Void
@@ -39,19 +41,17 @@ struct PersonalDetailsView: View {
     }
     
     private var backButton: some View {
-        VStack {
-            HStack {
-                ReusableBackButtonWrapper(action: {
-                    if let navigationController = getNavigationController() {
-                        navigationController.popViewController(animated: true)
-                    }
-                })
-                .frame(width: 24, height: 24)
-                Spacer()
-            }
-        }
-        .padding()
-    }
+           VStack {
+               HStack {
+                   ReusableBackButtonWrapper(action: {
+                       dismiss()
+                   })
+                   .frame(width: 24, height: 24)
+                   Spacer()
+               }
+           }
+           .padding()
+       }
     
     private var profileHeader: some View {
         VStack(spacing: 10) {
