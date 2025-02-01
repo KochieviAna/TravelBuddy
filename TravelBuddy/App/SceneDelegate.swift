@@ -5,7 +5,9 @@
 //  Created by MacBook on 15.01.25.
 //
 
+
 import UIKit
+import FirebaseAuth
 
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
@@ -15,25 +17,36 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let scene = (scene as? UIWindowScene) else { return }
         
         window = UIWindow(windowScene: scene)
-        
-        let hasSeenIntroduction = UserDefaults.standard.bool(forKey: "hasSeenIntroduction")
-        
-        let rootVC: UIViewController
-        if hasSeenIntroduction {
-            rootVC = SignInVC()
+
+        // ✅ Check if user has seen the introduction
+        if !UserDefaults.standard.bool(forKey: "hasSeenIntroduction") {
+            print("📌 Showing Introduction Screen")
+            window?.rootViewController = UINavigationController(rootViewController: IntroductionVC())
+        } else if Auth.auth().currentUser != nil {
+            print("✅ User is already logged in: \(Auth.auth().currentUser?.email ?? "No Email")")
+            window?.rootViewController = TabBarController()
         } else {
-            rootVC = IntroductionVC()
+            print("🔒 No user found, showing SignInVC")
+            window?.rootViewController = UINavigationController(rootViewController: SignInVC())
         }
         
-        let navigationController = UINavigationController(rootViewController: rootVC)
-        navigationController.navigationBar.isHidden = true
-        
-        window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
     }
-    
+
     func switchToTabBarController() {
         let tabBarController = TabBarController()
         window?.rootViewController = tabBarController
+        window?.makeKeyAndVisible()
+    }
+    
+    func switchToSignInVC() {
+        do {
+            try Auth.auth().signOut()
+        } catch {
+            print("❌ Error signing out: \(error.localizedDescription)")
+        }
+        
+        window?.rootViewController = UINavigationController(rootViewController: SignInVC())
+        window?.makeKeyAndVisible()
     }
 }

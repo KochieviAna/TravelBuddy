@@ -6,6 +6,11 @@
 //
 
 import UIKit
+import FirebaseAuth
+import FirebaseCore
+import GoogleSignIn
+import FirebaseFirestore
+import AuthenticationServices
 
 final class SignInVC: UIViewController {
     
@@ -22,6 +27,15 @@ final class SignInVC: UIViewController {
         view.translatesAutoresizingMaskIntoConstraints = false
         
         return view
+    }()
+    
+    private lazy var activityIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .large)
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.color = .deepBlue
+        indicator.hidesWhenStopped = true
+        
+        return indicator
     }()
     
     private lazy var signInLabel: UILabel = {
@@ -114,7 +128,7 @@ final class SignInVC: UIViewController {
         button.setTitle(" Sign in with Google", for: .normal)
         button.setTitleColor(.deepBlue.withAlphaComponent(0.5), for: .normal)
         button.titleLabel?.font = .robotoMedium(size: 20)
-        button.backgroundColor = .primaryWhite
+        button.backgroundColor = .white
         button.layer.cornerRadius = 20
         button.clipsToBounds = false
         
@@ -126,7 +140,7 @@ final class SignInVC: UIViewController {
         
         button.imageView?.contentMode = .scaleAspectFit
         
-        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowColor = UIColor.primaryBlack.cgColor
         button.layer.shadowOpacity = 0.2
         button.layer.shadowOffset = CGSize(width: 0, height: 4)
         button.layer.shadowRadius = 3
@@ -144,7 +158,7 @@ final class SignInVC: UIViewController {
         button.setTitle(" Sign in with Apple", for: .normal)
         button.setTitleColor(.primaryWhite, for: .normal)
         button.titleLabel?.font = .robotoMedium(size: 20)
-        button.backgroundColor = .black
+        button.backgroundColor = .primaryBlack
         button.layer.cornerRadius = 20
         button.clipsToBounds = false
         
@@ -153,7 +167,7 @@ final class SignInVC: UIViewController {
         button.imageView?.contentMode = .scaleAspectFit
         button.tintColor = .primaryWhite
         
-        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowColor = UIColor.primaryBlack.cgColor
         button.layer.shadowOpacity = 0.2
         button.layer.shadowOffset = CGSize(width: 0, height: 4)
         button.layer.shadowRadius = 3
@@ -165,38 +179,21 @@ final class SignInVC: UIViewController {
         return button
     }()
     
-    private lazy var guestSeparatorView = SeparatorView()
-    
-    private lazy var continueAsGuestButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Continue as a Guest", for: .normal)
-        button.setTitleColor(.deepBlue.withAlphaComponent(0.54), for: .normal)
-        button.titleLabel?.font = .robotoMedium(size: 20)
-        button.backgroundColor = .primaryWhite
-        button.layer.cornerRadius = 20
-        button.layer.shadowColor = UIColor.primaryBlack.cgColor
-        button.layer.shadowOffset = CGSize(width: 0, height: 4)
-        button.layer.shadowOpacity = 0.2
-        button.layer.shadowRadius = 3
-        button.addAction(UIAction(handler: { [weak self] _ in
-            self?.handleContinueAsGuest()
-        }), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        
-        return button
-    }()
+    private let viewModel = SignInViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setupBindings()
     }
     
     private func setupUI() {
         view.backgroundColor = .systemBackground
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
+        view.addSubview(activityIndicator)
         
-        [signInLabel, joinStackView, emailInputView, passwordInputView, forgotPasswordButton, signInButton, separatorView, googleSignInButton, appleSignInButton, guestSeparatorView, continueAsGuestButton].forEach {
+        [signInLabel, joinStackView, emailInputView, passwordInputView, forgotPasswordButton, signInButton, separatorView, googleSignInButton, appleSignInButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             contentView.addSubview($0)
         }
@@ -216,12 +213,15 @@ final class SignInVC: UIViewController {
             contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            contentView.bottomAnchor.constraint(equalTo: continueAsGuestButton.bottomAnchor, constant: 24),
+            contentView.bottomAnchor.constraint(equalTo: appleSignInButton.bottomAnchor, constant: 24),
             
-            signInLabel.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant:60),
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            
+            signInLabel.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 80),
             signInLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             
-            joinStackView.topAnchor.constraint(equalTo: signInLabel.bottomAnchor, constant: 5),
+            joinStackView.topAnchor.constraint(equalTo: signInLabel.bottomAnchor, constant: 1),
             joinStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             
             emailInputView.topAnchor.constraint(equalTo: joinStackView.bottomAnchor, constant: 25),
@@ -251,17 +251,7 @@ final class SignInVC: UIViewController {
             appleSignInButton.topAnchor.constraint(equalTo: googleSignInButton.bottomAnchor, constant: 18),
             appleSignInButton.leadingAnchor.constraint(equalTo: googleSignInButton.leadingAnchor),
             appleSignInButton.trailingAnchor.constraint(equalTo: googleSignInButton.trailingAnchor),
-            appleSignInButton.heightAnchor.constraint(equalToConstant: 48),
-            
-            guestSeparatorView.topAnchor.constraint(equalTo: appleSignInButton.bottomAnchor, constant: 25),
-            guestSeparatorView.leadingAnchor.constraint(equalTo: appleSignInButton.leadingAnchor),
-            guestSeparatorView.trailingAnchor.constraint(equalTo: appleSignInButton.trailingAnchor),
-            
-            continueAsGuestButton.topAnchor.constraint(equalTo: guestSeparatorView.bottomAnchor, constant: 25),
-            continueAsGuestButton.leadingAnchor.constraint(equalTo: guestSeparatorView.leadingAnchor),
-            continueAsGuestButton.trailingAnchor.constraint(equalTo: guestSeparatorView.trailingAnchor),
-            continueAsGuestButton.heightAnchor.constraint(equalToConstant: 50),
-            continueAsGuestButton.heightAnchor.constraint(equalToConstant: 48),
+            appleSignInButton.heightAnchor.constraint(equalToConstant: 48)
         ])
     }
     
@@ -273,34 +263,124 @@ final class SignInVC: UIViewController {
         navigationController?.pushViewController(ForgotPasswordVC(), animated: true)
     }
     
-    private func handleSignIn() {
-        let email = emailInputView.text
-        let password = passwordInputView.text
+    private func setupBindings() {
+        viewModel.onValidationError = { [weak self] message in
+            guard let self = self else { return }
+            self.hideActivityIndicator()
+            self.handleValidationError(message: message)
+        }
         
-        print("Email: \(email), Password: \(password)")
+        viewModel.onSignInError = { [weak self] message in
+            guard let self = self else { return }
+            self.hideActivityIndicator()
+            self.showAlert(title: "Sign-In Error", message: message)
+            self.setError(for: nil, message: message)
+        }
         
-        if email == "test@travelbuddy.com" && password == "password123" {
-            if let sceneDelegate = view.window?.windowScene?.delegate as? SceneDelegate {
+        viewModel.onSignInSuccess = { [weak self] in
+            self?.hideActivityIndicator()
+            if let sceneDelegate = self?.view.window?.windowScene?.delegate as? SceneDelegate {
                 sceneDelegate.switchToTabBarController()
             }
-        } else {
-            print("Invalid credentials")
         }
+    }
+    
+    private func handleSignIn() {
+        clearErrors()
+        showActivityIndicator()
+        viewModel.signIn(email: emailInputView.text, password: passwordInputView.text)
+    }
+    
+    private func handleValidationError(message: String) {
+        if message.contains("email") {
+            setError(for: emailInputView, message: message)
+        } else if message.contains("Password") {
+            setError(for: passwordInputView, message: message)
+        }
+    }
+    
+    private func setError(for inputView: ReusableLabelAndTextFieldView?, message: String) {
+        inputView?.setError(message)
+    }
+    
+    private func clearErrors() {
+        emailInputView.setError(nil)
+        passwordInputView.setError(nil)
     }
     
     private func handleGoogleSignIn() {
-        print("Google Sign-In tapped")
+        showActivityIndicator()
+        viewModel.handleGoogleSignIn(from: self) { [weak self] success, errorMessage in
+            self?.hideActivityIndicator()
+            if success {
+                if let sceneDelegate = self?.view.window?.windowScene?.delegate as? SceneDelegate {
+                    sceneDelegate.switchToTabBarController()
+                }
+            } else if let errorMessage = errorMessage {
+                self?.showAlert(title: "Google Sign-In Error", message: errorMessage)
+            }
+        }
     }
     
     private func handleAppleSignIn() {
-        print("Apple Sign-In tapped")
+        showActivityIndicator()
+        
+        let provider = ASAuthorizationAppleIDProvider()
+        let request = provider.createRequest()
+        
+        let nonce = viewModel.prepareAppleSignIn()
+        request.requestedScopes = [.fullName, .email]
+        request.nonce = nonce
+        
+        let controller = ASAuthorizationController(authorizationRequests: [request])
+        controller.delegate = self
+        controller.presentationContextProvider = self
+        controller.performRequests()
     }
     
-    private func handleContinueAsGuest() {
-        print("Continue as a Guest tapped")
-        
-        if let sceneDelegate = view.window?.windowScene?.delegate as? SceneDelegate {
-            sceneDelegate.switchToTabBarController()
+    private func showActivityIndicator() {
+        activityIndicator.startAnimating()
+        view.isUserInteractionEnabled = false
+    }
+    
+    private func hideActivityIndicator() {
+        activityIndicator.stopAnimating()
+        view.isUserInteractionEnabled = true
+    }
+    
+    private func showAlert(title: String, message: String, completion: (() -> Void)? = nil) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+            completion?()
+        }))
+        present(alert, animated: true, completion: nil)
+    }
+}
+
+extension SignInVC: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
+            viewModel.appleSignIn(credential: appleIDCredential) { [weak self] success, errorMessage in
+                self?.hideActivityIndicator()
+                
+                if success {
+                    if let sceneDelegate = self?.view.window?.windowScene?.delegate as? SceneDelegate {
+                        sceneDelegate.switchToTabBarController()
+                    }
+                } else if let errorMessage = errorMessage {
+                    self?.showAlert(title: "Apple Sign-In Error", message: errorMessage)
+                }
+            }
         }
+    }
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        hideActivityIndicator()
+        showAlert(title: "Apple Sign-In Error", message: error.localizedDescription)
+    }
+    
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        return self.view.window!
     }
 }

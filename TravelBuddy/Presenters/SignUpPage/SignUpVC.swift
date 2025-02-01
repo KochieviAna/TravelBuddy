@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import FirebaseAuth
+import FirebaseFirestore
 
 final class SignUpVC: UIViewController {
     
@@ -13,28 +15,40 @@ final class SignUpVC: UIViewController {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.alwaysBounceVertical = true
+        
         return scrollView
     }()
     
     private lazy var contentView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
+        
         return view
+    }()
+    
+    private lazy var activityIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .large)
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.color = .deepBlue
+        indicator.hidesWhenStopped = true
+        
+        return indicator
     }()
     
     private lazy var backButton: ReusableBackButton = {
         return ReusableBackButton { [weak self] in
-            self?.handleBackButton()
+            self?.navigationController?.popViewController(animated: true)
         }
     }()
     
     private lazy var signUpLabel: UILabel = {
         let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Sign Up"
         label.font = .robotoBold(size: 30)
         label.textAlignment = .right
         label.textColor = UIColor.deepBlue
-        label.translatesAutoresizingMaskIntoConstraints = false
+        
         return label
     }()
     
@@ -87,15 +101,19 @@ final class SignUpVC: UIViewController {
         )
     }()
     
+    private let viewModel = SignUpViewModel()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setupBindings()
     }
     
     private func setupUI() {
         view.backgroundColor = .systemBackground
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
+        view.addSubview(activityIndicator)
         
         [backButton, signUpLabel, fullNameInputView, emailInputView, passwordInputView, confirmPasswordInputView, signUpButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
@@ -118,6 +136,9 @@ final class SignUpVC: UIViewController {
             contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             contentView.bottomAnchor.constraint(equalTo: signUpButton.bottomAnchor, constant: 40),
+            
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             
             backButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
             backButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
@@ -149,17 +170,81 @@ final class SignUpVC: UIViewController {
         ])
     }
     
-    private func handleBackButton() {
-        print("Back button tapped")
-        navigationController?.popViewController(animated: true)
+    private func setupBindings() {
+        viewModel.onValidationError = { [weak self] message in
+            self?.hideActivityIndicator()
+            self?.showAlert(title: "Validation Error", message: message)
+            self?.handleValidationError(message: message)
+        }
+        
+        viewModel.onSignUpError = { [weak self] message in
+            self?.hideActivityIndicator()
+            self?.showAlert(title: "Sign Up Error", message: message)
+            self?.setError(for: nil, message: message)
+        }
+        
+        viewModel.onSignUpSuccess = { [weak self] in
+            self?.hideActivityIndicator()
+            self?.clearErrors()
+            self?.showAlert(title: "Success", message: "You have successfully signed up!") {
+                self?.showSuccessMessage()
+            }
+        }
     }
     
     private func handleSignUp() {
-        print("Sign up initiated")
-        let fullName = fullNameInputView.text
-        let email = emailInputView.text
-        let password = passwordInputView.text
-        let confirmPassword = confirmPasswordInputView.text
-        print("Full Name: \(fullName), Email: \(email), Password: \(password), Confirm Password: \(confirmPassword)")
+        clearErrors()
+        showActivityIndicator()
+        viewModel.signUp(
+            fullName: fullNameInputView.text,
+            email: emailInputView.text,
+            password: passwordInputView.text,
+            confirmPassword: confirmPasswordInputView.text
+        )
+    }
+    
+    private func handleValidationError(message: String) {
+        if message.contains("Full name") {
+            setError(for: fullNameInputView, message: message)
+        } else if message.contains("email") {
+            setError(for: emailInputView, message: message)
+        } else if message.contains("Password") && !message.contains("match") {
+            setError(for: passwordInputView, message: message)
+        } else if message.contains("match") {
+            setError(for: confirmPasswordInputView, message: message)
+        }
+    }
+    
+    private func setError(for inputView: ReusableLabelAndTextFieldView?, message: String) {
+        inputView?.setError(message)
+    }
+    
+    private func clearErrors() {
+        fullNameInputView.setError(nil)
+        emailInputView.setError(nil)
+        passwordInputView.setError(nil)
+        confirmPasswordInputView.setError(nil)
+    }
+    
+    private func showSuccessMessage() {
+        navigationController?.popViewController(animated: true)
+    }
+    
+    private func showActivityIndicator() {
+        activityIndicator.startAnimating()
+        view.isUserInteractionEnabled = false
+    }
+    
+    private func hideActivityIndicator() {
+        activityIndicator.stopAnimating()
+        view.isUserInteractionEnabled = true
+    }
+    
+    private func showAlert(title: String, message: String, completion: (() -> Void)? = nil) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+            completion?()
+        }))
+        present(alert, animated: true, completion: nil)
     }
 }

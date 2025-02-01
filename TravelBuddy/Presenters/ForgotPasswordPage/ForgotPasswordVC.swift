@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 final class ForgotPasswordVC: UIViewController {
     
@@ -22,6 +23,15 @@ final class ForgotPasswordVC: UIViewController {
         view.translatesAutoresizingMaskIntoConstraints = false
         
         return view
+    }()
+    
+    private lazy var activityIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .large)
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.color = .deepBlue
+        indicator.hidesWhenStopped = true
+        
+        return indicator
     }()
     
     private lazy var backButton: UIButton = {
@@ -76,16 +86,22 @@ final class ForgotPasswordVC: UIViewController {
         )
     }()
     
+    private let viewModel = ForgotPasswordViewModel()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupUI()
+        setupBindings()
     }
     
     private func setupUI() {
         view.backgroundColor = .systemBackground
+        
+        navigationController?.setNavigationBarHidden(true, animated: false)
+
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
+        view.addSubview(activityIndicator)
         
         [backButton, forgotPasswordLabel, noteLabel, emailInputView, nextButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
@@ -107,6 +123,9 @@ final class ForgotPasswordVC: UIViewController {
             contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             contentView.bottomAnchor.constraint(equalTo: nextButton.bottomAnchor, constant: 24),
+            
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             
             backButton.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 16),
             backButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
@@ -130,14 +149,58 @@ final class ForgotPasswordVC: UIViewController {
         ])
     }
     
+    private func setupBindings() {
+        viewModel.onValidationError = { [weak self] message in
+            self?.hideActivityIndicator()
+            self?.handleValidationError(message: message)
+        }
+        viewModel.onPasswordResetError = { [weak self] message in
+            self?.hideActivityIndicator()
+            self?.setError(for: nil, message: message)
+        }
+        viewModel.onPasswordResetSuccess = { [weak self] in
+            self?.hideActivityIndicator()
+            self?.navigateToEmailSentScreen(email: self?.emailInputView.text ?? "")
+        }
+    }
+    
+    private func handleNextButton() {
+        clearErrors()
+        showActivityIndicator()
+        viewModel.sendPasswordReset(email: emailInputView.text)
+    }
+    
+    private func handleValidationError(message: String) {
+        if message.contains("email") {
+            setError(for: emailInputView, message: message)
+        }
+    }
+    
+    private func setError(for inputView: ReusableLabelAndTextFieldView?, message: String) {
+        inputView?.setError(message)
+    }
+    
+    private func clearErrors() {
+        emailInputView.setError(nil)
+    }
+    
     private func handleBackButton() {
         navigationController?.popViewController(animated: true)
     }
     
-    private func handleNextButton() {
-        let email = emailInputView.text
-        print("Send password reset to email: \(email)")
-        
-        navigationController?.pushViewController(EmailSentVC(), animated: true)
+    private func navigateToEmailSentScreen(email: String) {
+        let emailSentVC = EmailSentVC()
+        emailSentVC.email = email
+        navigationController?.pushViewController(emailSentVC, animated: true)
+    }
+    
+    private func showActivityIndicator() {
+        activityIndicator.startAnimating()
+        view.isUserInteractionEnabled = false
+    }
+    
+    private func hideActivityIndicator() {
+        activityIndicator.stopAnimating()
+        view.isUserInteractionEnabled = true
     }
 }

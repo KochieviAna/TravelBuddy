@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 final class ReusableBackButton: UIButton {
     
@@ -23,5 +24,35 @@ final class ReusableBackButton: UIButton {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+struct ReusableBackButtonWrapper: UIViewRepresentable {
+    let action: () -> Void
+
+    func makeUIView(context: Context) -> UIButton {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "chevron.left"), for: .normal)
+        button.tintColor = .deepBlue
+        button.addTarget(context.coordinator, action: #selector(Coordinator.backButtonTapped), for: .touchUpInside)
+        return button
+    }
+
+    func updateUIView(_ uiView: UIButton, context: Context) {}
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(action: action)
+    }
+
+    class Coordinator {
+        let action: () -> Void
+
+        init(action: @escaping () -> Void) {
+            self.action = action
+        }
+
+        @objc func backButtonTapped() {
+            action()
+        }
     }
 }
