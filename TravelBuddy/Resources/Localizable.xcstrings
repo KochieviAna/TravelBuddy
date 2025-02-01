@@ -1,0 +1,819 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "" : {
+
+    },
+    "%@ KM" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ KM"
+          }
+        }
+      }
+    },
+    "Account" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ანგარიში"
+          }
+        }
+      }
+    },
+    "Add Journey" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "დაამატე მოგზაურობა"
+          }
+        }
+      }
+    },
+    "Add Vehicle" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "დაამატე ავტომობილი"
+          }
+        }
+      }
+    },
+    "Battery Capacity (kWh)" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ბატარეის ტევადობა (კვტ/სთ)"
+          }
+        }
+      }
+    },
+    "Battery Capacity: %.1f kWh" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "აკუმულატორის მოცულობა: %.1f kWh"
+          }
+        }
+      }
+    },
+    "Battery Needed" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ბატარეის საჭიროება"
+          }
+        }
+      }
+    },
+    "Brand" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ბენდი"
+          }
+        }
+      }
+    },
+    "Brand: %@" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ბრენდი: %@"
+          }
+        }
+      }
+    },
+    "Change password" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "შეცვალე პაროლი"
+          }
+        }
+      }
+    },
+    "Charging Sessions" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "დატენვის სესიები"
+          }
+        }
+      }
+    },
+    "Choose Route" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "აირჩიე მარშრუტი"
+          }
+        }
+      }
+    },
+    "CO2 Emissions" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CO2 გამონაბოლქვი"
+          }
+        }
+      }
+    },
+    "CO2 Emissions (g/km)" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CO2 გამონაბოლქვი (გ/კმ)"
+          }
+        }
+      }
+    },
+    "CO2 Emissions (g/mi)" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CO2 გამონაბოლქვი (გ/მი)"
+          }
+        }
+      }
+    },
+    "CO2 Emissions Over Time" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CO2 გამონაბოლქვი დროთა განმავლობაში"
+          }
+        }
+      }
+    },
+    "CO2 Emissions: %lf g/km" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CO2 გამონაბოლქვი: %lf გ/კმ"
+          }
+        }
+      }
+    },
+    "Date" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "თარიღი"
+          }
+        }
+      }
+    },
+    "Date: %@" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "თარიღი: %@"
+          }
+        }
+      }
+    },
+    "DD/MM/YYYY" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "დდ/თთ/წწწწ"
+          }
+        }
+      }
+    },
+    "Delete Account" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ანგარიშის წაშლა"
+          }
+        }
+      }
+    },
+    "Description" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "აღწერა"
+          }
+        }
+      }
+    },
+    "Diesel" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "დიზელი"
+          }
+        }
+      }
+    },
+    "Distance" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "მანძილი"
+          }
+        }
+      }
+    },
+    "Distance (KM)" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "მანძილი (კმ)"
+          }
+        }
+      }
+    },
+    "Distance: %@ km" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "მანძილი: %@ კმ"
+          }
+        }
+      }
+    },
+    "Done" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "დასრულება"
+          }
+        }
+      }
+    },
+    "Electric" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ელექტრო"
+          }
+        }
+      }
+    },
+    "Electric Consumption (kWh)" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ელექტრომოხმარება (კვტ/სთ)"
+          }
+        }
+      }
+    },
+    "Electric Consumption Trends" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ელექტროენერგიის მოხმარების ტენდენციები"
+          }
+        }
+      }
+    },
+    "Electric Range (miles)" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ელექტრული დიაპაზონი (მილი)"
+          }
+        }
+      }
+    },
+    "Electric Range Used" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "გამოყენებული ელექტრო დიაპაზონი"
+          }
+        }
+      }
+    },
+    "Electric Range: %.1f miles" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ელექტრული დიაპაზონი: %.1f მილი"
+          }
+        }
+      }
+    },
+    "Electric Vehicle Information" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ინფორმაცია ელექტრო ავტომობილის შესახებ"
+          }
+        }
+      }
+    },
+    "Engine Type" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ძრავის ტიპი"
+          }
+        }
+      }
+    },
+    "Engine Type: %@" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ძრავის ტიპი: %@"
+          }
+        }
+      }
+    },
+    "EPA Electric Consumption (kWh/100mi)" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "EPA ელექტრომოხმარება (კვტ/სთ/100 მილი)"
+          }
+        }
+      }
+    },
+    "EPA Electric Consumption: %.1f kWh/100mi" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "EPA ელექტრომოხმარება: %.1f kWh/100mi"
+          }
+        }
+      }
+    },
+    "Error" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "შეცდომა"
+          }
+        }
+      }
+    },
+    "Fuel Consumption (MPG)" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "საწვავის მოხმარება (MPG)"
+          }
+        }
+      }
+    },
+    "Fuel Consumption Over Time" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "საწვავის მოხმარება დროთა განმავლობაში"
+          }
+        }
+      }
+    },
+    "Fuel Consumption: %.1f MPG" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "საწვავის მოხმარება: %.1f MPG"
+          }
+        }
+      }
+    },
+    "Fuel Needed (Liters)" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "საჭირო საწვავი (ლიტრი)"
+          }
+        }
+      }
+    },
+    "Fuel Tank Capacity (gallons)" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "საწვავის ავზის ტევადობა (გალონები)"
+          }
+        }
+      }
+    },
+    "Fuel Tank Capacity: %.1f Gallons" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "საწვავის ავზის მოცულობა: %.1f გალონი"
+          }
+        }
+      }
+    },
+    "Fuel Type" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "საწვავის ტიპი"
+          }
+        }
+      }
+    },
+    "Fuel Type: %@" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "საწვავის ტიპი: %@"
+          }
+        }
+      }
+    },
+    "Fuel Vehicle Information" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "საწვავის ავტომობილის ინფორმაცია"
+          }
+        }
+      }
+    },
+    "Gallons Needed" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "გალონების საჭიროება"
+          }
+        }
+      }
+    },
+    "Gasoline" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ბენზინი"
+          }
+        }
+      }
+    },
+    "General Information" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ზოგადი ინფორმაცია"
+          }
+        }
+      }
+    },
+    "Hybrid" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ჰიბრიდული"
+          }
+        }
+      }
+    },
+    "Hybrid Fuel Efficiency (MPG)" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ჰიბრიდული საწვავის ეფექტურობა (MPG)"
+          }
+        }
+      }
+    },
+    "Hybrid Fuel Efficiency: %.1f MPG" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ჰიბრიდული საწვავის ეფექტურობა: %.1f MPG"
+          }
+        }
+      }
+    },
+    "Hybrid Fuel Needed" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ჰიბრიდული საწვავის საჭიროება"
+          }
+        }
+      }
+    },
+    "Hybrid Vehicle Information" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ჰიბრიდული ავტომობილის ინფორმაცია"
+          }
+        }
+      }
+    },
+    "Journey Details" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "მოგზაურობის დეტალები"
+          }
+        }
+      }
+    },
+    "Journey name" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "მოგზაურობის სახელი"
+          }
+        }
+      }
+    },
+    "Journey Statistics" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "მოგზაურობის სტატისტიკა"
+          }
+        }
+      }
+    },
+    "Missing Information" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ინფორმაცია აკლია"
+          }
+        }
+      }
+    },
+    "Model" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "მოდელი"
+          }
+        }
+      }
+    },
+    "Model: %@" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "მოდელი: %@"
+          }
+        }
+      }
+    },
+    "Name Journey" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ახალი მოგზაურობა"
+          }
+        }
+      }
+    },
+    "No journeys available" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "მგზავრობები ხელმისაწვდომი არ არის"
+          }
+        }
+      }
+    },
+    "No valid vehicle data available." : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ავტომობილის მოქმედი მონაცემები არ არის ხელმისაწვდომი."
+          }
+        }
+      }
+    },
+    "No Vehicle Available" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ავტომობილი არ არის ხელმისაწვდომი"
+          }
+        }
+      }
+    },
+    "No vehicle data available" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ავტომობილის მონაცემები არ არის ხელმისაწვდომი"
+          }
+        }
+      }
+    },
+    "OK" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "დიახ"
+          }
+        }
+      }
+    },
+    "Please fill in all fields before saving." : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "გთხოვთ შეავსოთ ყველა ველი შენახვამდე."
+          }
+        }
+      }
+    },
+    "Save Journey" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "შეინახე  მოგზაურობა"
+          }
+        }
+      }
+    },
+    "Save Vehicle" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "შეინახე ავტომობილი"
+          }
+        }
+      }
+    },
+    "Select Date" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "აირჩიე თარიღი"
+          }
+        }
+      }
+    },
+    "Set Date" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "დაათარიღე"
+          }
+        }
+      }
+    },
+    "Start Journey with your Travel Buddy" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "დაიწყეთ მოგზაურობა თქვენს Travel Buddy-სთან ერთად"
+          }
+        }
+      }
+    },
+    "Tank Re-Fill" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ავზის ხელახალი შევსება"
+          }
+        }
+      }
+    },
+    "Total Distance Traveled Over Time" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "დროში გავლილი მთლიანი მანძილი"
+          }
+        }
+      }
+    },
+    "Travel Buddy" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Travel Buddy"
+          }
+        }
+      }
+    },
+    "Upload Picture" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ატვირთე სურათი"
+          }
+        }
+      }
+    },
+    "Vehicle Details" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ავტომობილის დეტალები"
+          }
+        }
+      }
+    },
+    "Year" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "წელი"
+          }
+        }
+      }
+    },
+    "Year: %lld" : {
+      "localizations" : {
+        "ka-GE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "წელი: %lld"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
