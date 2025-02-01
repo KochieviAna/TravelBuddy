@@ -3,7 +3,7 @@
 
 **Overview**
 
-Travel Buddy is an iOS application designed for frequent travelers, particularly those who drive. The app provides features like trip planning, optimized route selection, fuel and CO2 tracking, and trip archives. It integrates Firebase for authentication and data storage while leveraging both UIKit and SwiftUI for the user interface.
+Travel Buddy is an iOS application designed for frequent travelers, particularly those who drive. The app provides features like trip planning, optimized route selection, fuel and CO2 tracking, and trip archives. It integrates Firebase for authentication and data storage while using both UIKit and SwiftUI for the user interface.
 
 
 **Features**
