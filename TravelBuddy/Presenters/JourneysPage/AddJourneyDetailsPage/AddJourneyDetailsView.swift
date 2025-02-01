@@ -172,7 +172,6 @@ struct AddJourneyDetailsView: View {
         
         let distance = viewModel.distanceToPin ?? 0.0
         
-        // ✅ **Validation: All fields are required**
         if journeyName.isEmpty {
             alertMessage = "Please enter a journey name."
             showAlert = true

@@ -6,12 +6,9 @@
 //
 
 import SwiftUI
-import FirebaseFirestore
-import FirebaseAuth
 
 struct JourneyArchivesView: View {
-    @State private var archivedJourneys: [ArchivedJourney] = []
-    private let db = Firestore.firestore()
+    @StateObject private var viewModel = JourneyArchivesViewModel()
     
     var onSelectJourney: (ArchivedJourney) -> Void
     @Environment(\.presentationMode) var presentationMode
@@ -29,7 +26,7 @@ struct JourneyArchivesView: View {
             .background(Color(.systemBackground))
             .padding(.leading)
             
-            List(archivedJourneys) { journey in
+            List(viewModel.archivedJourneys) { journey in
                 Button(action: {
                     onSelectJourney(journey)
                 }) {
@@ -38,7 +35,7 @@ struct JourneyArchivesView: View {
                             .font(.robotoSemiBold(size: 15))
                             .foregroundColor(.deepBlue)
                         
-                        Text("Date: \(formattedDate(from: journey.date))")
+                        Text("Date: \(viewModel.formattedDate(from: journey.date))")
                             .font(.robotoRegular(size: 14))
                             .foregroundColor(.deepBlue)
                     }
@@ -49,31 +46,6 @@ struct JourneyArchivesView: View {
         .background(Color(.systemBackground))
         .navigationBarHidden(true)
         .navigationBarBackButtonHidden(true)
-        .onAppear {
-            fetchArchivedJourneys()
-        }
-    }
-    
-    private func fetchArchivedJourneys() {
-        guard let userId = Auth.auth().currentUser?.uid else { return }
-        
-        db.collection("users").document(userId).collection("archivedJourneys")
-            .order(by: "date", descending: true)
-            .getDocuments { snapshot, error in
-                if let error = error {
-                    print("Error fetching archived journeys: \(error)")
-                } else {
-                    self.archivedJourneys = snapshot?.documents.compactMap { document in
-                        try? document.data(as: ArchivedJourney.self)
-                    } ?? []
-                }
-            }
-    }
-    
-    private func formattedDate(from date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "dd/MM/yyyy"
-        return formatter.string(from: date)
     }
 }
 

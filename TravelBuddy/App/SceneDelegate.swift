@@ -17,10 +17,9 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: scene)
 
-        // ✅ Check if user is already authenticated
         if Auth.auth().currentUser != nil {
             print("✅ User is already logged in: \(Auth.auth().currentUser?.email ?? "No Email")")
-            window?.rootViewController = TabBarController() // Directly open main app
+            window?.rootViewController = TabBarController()
         } else {
             print("🔒 No user found, showing SignInVC")
             window?.rootViewController = UINavigationController(rootViewController: SignInVC())

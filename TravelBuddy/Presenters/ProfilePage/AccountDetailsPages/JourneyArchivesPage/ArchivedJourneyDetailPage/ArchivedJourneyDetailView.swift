@@ -8,8 +8,12 @@
 import SwiftUI
 
 struct ArchivedJourneyDetailView: View {
-    var journey: ArchivedJourney
+    @StateObject private var viewModel: ArchivedJourneyDetailViewModel
     @Environment(\.presentationMode) var presentationMode
+    
+    init(journey: ArchivedJourney) {
+        _viewModel = StateObject(wrappedValue: ArchivedJourneyDetailViewModel(journey: journey))
+    }
     
     var body: some View {
         ScrollView {
@@ -19,20 +23,19 @@ struct ArchivedJourneyDetailView: View {
                         presentationMode.wrappedValue.dismiss()
                     }
                     .frame(width: 44, height: 44)
-                    
                     Spacer()
                 }
                 
                 VStack(alignment: .leading) {
-                    Text(journey.journeyName)
+                    Text(viewModel.journey.journeyName)
                         .font(.robotoSemiBold(size: 24))
                         .foregroundStyle(.deepBlue)
                     
-                    Text("Date: \(formattedDate(from: journey.date))")
+                    Text("Date: \(viewModel.formattedDate())")
                         .font(.robotoRegular(size: 16))
                         .foregroundStyle(.stoneGrey)
                     
-                    Text(journey.description.isEmpty ? "No Description Provided" : journey.description)
+                    Text(viewModel.journey.description.isEmpty ? "No Description Provided" : viewModel.journey.description)
                         .font(.robotoRegular(size: 16))
                         .foregroundStyle(.stoneGrey)
                 }
@@ -44,8 +47,8 @@ struct ArchivedJourneyDetailView: View {
                         .shadow(color: Color("primaryBlack").opacity(0.25), radius: 2, x: 2, y: 2)
                 )
                 
-                if let vehicle = journey.vehicle {
-                    archivedStatisticsView(for: journey, vehicle: vehicle)
+                if viewModel.vehicle != nil {
+                    archivedStatisticsView()
                 } else {
                     Text("No vehicle data available")
                         .font(.robotoSemiBold(size: 30))
@@ -57,30 +60,15 @@ struct ArchivedJourneyDetailView: View {
         .navigationBarHidden(true)
     }
     
-    private func formattedDate(from date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "dd/MM/yyyy"
-        return formatter.string(from: date)
-    }
-    
-    private func archivedStatisticsView(for journey: ArchivedJourney, vehicle: Car) -> some View {
+    private func archivedStatisticsView() -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Journey Statistics")
                 .font(.robotoSemiBold(size: 30))
                 .foregroundStyle(.deepBlue)
                 .padding(.bottom, 5)
             
-            statisticsRow(title: "Distance:", value: "\(String(format: "%.2f", journey.distanceKm)) KM")
-            
-            switch vehicle.engineType {
-            case "Gasoline", "Diesel":
-                showFuelStatistics(journey: journey)
-            case "Electric":
-                showElectricStatistics(journey: journey)
-            case "Hybrid":
-                showHybridStatistics(journey: journey)
-            default:
-                Text("No valid vehicle data available.")
+            ForEach(viewModel.statisticsRows()) { stat in
+                statisticsRow(title: stat.title, value: stat.value)
             }
         }
         .frame(maxWidth: .infinity)
@@ -90,41 +78,6 @@ struct ArchivedJourneyDetailView: View {
                 .fill(Color(.systemBackground))
                 .shadow(color: Color("primaryBlack").opacity(0.25), radius: 2, x: 2, y: 2)
         )
-    }
-    
-    private func showFuelStatistics(journey: ArchivedJourney) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Fuel Consumption")
-                .font(.robotoSemiBold(size: 24))
-                .foregroundStyle(.deepBlue)
-            
-            statisticsRow(title: "Fuel Needed:", value: journey.fuelNeeded ?? "N/A")
-            statisticsRow(title: "Tank Re-Fill:", value: journey.tankRefill ?? "N/A")
-            statisticsRow(title: "CO2 Emissions:", value: journey.co2Emissions ?? "N/A")
-        }
-    }
-    
-    private func showElectricStatistics(journey: ArchivedJourney) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Electric Consumption")
-                .font(.robotoSemiBold(size: 24))
-                .foregroundStyle(.deepBlue)
-            
-            statisticsRow(title: "Battery Needed:", value: journey.electricConsumption ?? "N/A")
-            statisticsRow(title: "Charging Sessions:", value: journey.chargingSessions ?? "N/A")
-        }
-    }
-    
-    private func showHybridStatistics(journey: ArchivedJourney) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Hybrid Consumption")
-                .font(.robotoSemiBold(size: 24))
-                .foregroundStyle(.deepBlue)
-            
-            statisticsRow(title: "Hybrid Fuel Needed:", value: journey.hybridFuelNeeded ?? "N/A")
-            statisticsRow(title: "Electric Range Used:", value: journey.electricRangeUsed ?? "N/A")
-            statisticsRow(title: "Charging Sessions:", value: journey.chargingSessions ?? "N/A")
-        }
     }
     
     private func statisticsRow(title: String, value: String) -> some View {
