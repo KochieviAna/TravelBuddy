@@ -46,7 +46,7 @@ struct AddJourneyDetailsView: View {
                             
                             TextField("Journey name", text: $journeyName)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .foregroundStyle(.deepBlue)
+                                .foregroundStyle(.stoneGrey)
                         }
                         
                         VStack(alignment: .leading) {

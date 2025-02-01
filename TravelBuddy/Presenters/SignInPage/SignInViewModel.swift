@@ -33,16 +33,23 @@ final class SignInViewModel {
         
         Auth.auth().signIn(withEmail: email, password: password) { [weak self] authResult, error in
             if let error = error {
-                self?.onSignInError?("Sign-in failed. Please check your credentials or account status. Error: \(error.localizedDescription)")
+                self?.onSignInError?("Sign-in failed. Error: \(error.localizedDescription)")
                 return
             }
             
-            if authResult?.user != nil {
+            if let user = authResult?.user {
+                self?.saveUserSession(user: user)
                 self?.onSignInSuccess?()
             } else {
                 self?.onSignInError?("Unexpected error occurred during sign-in.")
             }
         }
+    }
+    
+    private func saveUserSession(user: User) {
+        UserDefaults.standard.set(true, forKey: "isUserLoggedIn")
+        UserDefaults.standard.set(user.email, forKey: "userEmail")
+        UserDefaults.standard.synchronize()
     }
     
     private func isValidEmail(_ email: String) -> Bool {

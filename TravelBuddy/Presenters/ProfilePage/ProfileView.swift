@@ -42,7 +42,7 @@ struct ProfileView: View {
             ZStack {
                 Circle()
                     .frame(width: 120)
-                    .foregroundStyle(Color("primaryWhite"))
+                    .foregroundStyle(Color(.systemBackground))
                     .shadow(color: Color("primaryBlack").opacity(0.25), radius: 1, x: 1, y: 1)
                     .shadow(color: Color("primaryBlack").opacity(0.25), radius: 1, x: -1, y: -1)
                 

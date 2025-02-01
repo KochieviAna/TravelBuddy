@@ -8,30 +8,27 @@
 import SwiftUI
 import FirebaseFirestore
 import FirebaseAuth
-import FirebaseFirestore
 
 struct JourneysView: View {
     @State private var journey: Journey? = nil
     @State private var vehicle: Car? = nil
     @State private var showAddJourneySheet = false
+    @State private var showVehicleAlert = false
     @State private var comment: String = ""
     
     private let db = Firestore.firestore()
     
     var body: some View {
-        ZStack {
-            Color(uiColor: .systemBackground)
-                .ignoresSafeArea()
-            
+        VStack {
             if let journey = journey, let vehicle = vehicle {
-                journeyView(for: journey, vehicle: vehicle)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .padding()
+                journeyContentView(for: journey, vehicle: vehicle)
             } else {
                 emptyView
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
+        .ignoresSafeArea()
+        .background(Color(.systemBackground))
+        .padding(.top)
         .sheet(isPresented: $showAddJourneySheet) {
             AddJourneyDetailsView()
                 .onDisappear {
@@ -45,6 +42,7 @@ struct JourneysView: View {
         }
     }
     
+    // MARK: - Fetch Journey Data
     private func fetchJourney() {
         guard let userId = Auth.auth().currentUser?.uid else { return }
         
@@ -64,6 +62,7 @@ struct JourneysView: View {
             }
     }
     
+    // MARK: - Fetch Vehicle Data
     private func fetchVehicle() {
         guard let userId = Auth.auth().currentUser?.uid else { return }
         
@@ -78,55 +77,87 @@ struct JourneysView: View {
                     } catch {
                         print("Error decoding vehicle: \(error)")
                     }
+                } else {
+                    self.vehicle = nil
                 }
             }
     }
     
+    // MARK: - Empty View (Centered)
     private var emptyView: some View {
         VStack {
+            Spacer()
+            
             Image("journey")
                 .resizable()
                 .frame(width: 200, height: 200)
                 .opacity(0.5)
             
             Button("Start Journey with Travel Buddy") {
-                showAddJourneySheet.toggle()
+                if vehicle == nil {
+                    showVehicleAlert = true
+                } else {
+                    showAddJourneySheet.toggle()
+                }
             }
             .foregroundStyle(.deepBlue)
             .font(.robotoBold(size: 16))
             .padding()
-        }
-    }
-    
-    private func journeyView(for journey: Journey, vehicle: Car) -> some View {
-        VStack(alignment: .leading, spacing: 16) {
-            
-            Text("Your Journey")
-                .font(.robotoSemiBold(size: 30))
-                .foregroundStyle(.deepBlue)
-            
-            Text(journey.journeyName)
-                .font(.robotoBold(size: 24))
-                .foregroundStyle(.deepBlue)
-            
-            Text(journey.description)
-                .font(.robotoRegular(size: 16))
-                .foregroundStyle(.stoneGrey)
-            
-            Text("Date: \(formattedDate(from: journey.date))")
-                .font(.robotoRegular(size: 16))
-                .foregroundStyle(.deepBlue)
-            
-            Divider()
-            
-            VStack {
-                journeyStatistics(for: journey, vehicle: vehicle)
-            }
             
             Spacer()
-            
-            commentSection()
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    
+    // MARK: - Journey View with Fixed Bottom Button
+    private func journeyContentView(for journey: Journey, vehicle: Car) -> some View {
+        VStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("Travel Buddy")
+                        .font(.robotoSemiBold(size: 30))
+                        .foregroundStyle(.deepBlue)
+                    
+                    VStack(alignment: .leading) {
+                        Text(journey.journeyName)
+                            .font(.robotoSemiBold(size: 24))
+                            .foregroundStyle(.deepBlue)
+                        Text("Date: \(formattedDate(from: journey.date))")
+                            .font(.robotoRegular(size: 16))
+                            .foregroundStyle(.stoneGrey)
+                        
+                        Text(journey.description)
+                            .font(.robotoRegular(size: 16))
+                            .foregroundStyle(.stoneGrey)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color(.systemBackground))
+                            .shadow(color: Color("primaryBlack").opacity(0.25), radius: 2, x: 2, y: 2)
+                    )
+                    
+                    VStack(alignment: .leading) {
+                        journeyStatistics(for: journey, vehicle: vehicle)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color(.systemBackground))
+                            .shadow(color: Color("primaryBlack").opacity(0.25), radius: 2, x: 2, y: 2)
+                    )
+                    
+                    Spacer()
+                    
+                    ReusableButtonWrapper(title: "End Journey", action: endJourneyAction)
+                        .frame(maxWidth: .infinity)
+                }
+                .padding(.horizontal)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
     private func journeyStatistics(for journey: Journey, vehicle: Car) -> some View {
@@ -262,28 +293,46 @@ struct JourneysView: View {
         return formatter.string(from: date)
     }
     
-    private func commentSection() -> some View {
-        VStack {
-            TextField("Leave a comment...", text: $comment)
-                .font(.robotoRegular(size: 20))
-                .foregroundStyle(.deepBlue)
-                .padding()
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(Color.stoneGrey, lineWidth: 1)
-                )
-            
-            HStack {
-                Spacer()
-                Button(action: {
-                    print("Comment Sent: \(comment)")
-                }) {
-                    Image(systemName: "paperplane.circle.fill")
-                        .foregroundColor(.deepBlue)
-                        .font(.system(size: 28))
+    private func endJourneyAction() {
+        guard let userId = Auth.auth().currentUser?.uid, let journey = journey, let vehicle = vehicle else { return }
+        
+        let archivedJourney = ArchivedJourney(
+            journeyName: journey.journeyName,
+            description: journey.description,
+            date: journey.date,
+            distanceKm: journey.distanceKm,
+            fuelNeeded: calculateFuelNeeded(distance: journey.distanceKm, vehicle: vehicle),
+            tankRefill: calculateTankRefill(distance: journey.distanceKm, vehicle: vehicle),
+            co2Emissions: calculateCO2Emissions(distance: journey.distanceKm, vehicle: vehicle),
+            electricConsumption: calculateElectricConsumption(distance: journey.distanceKm, vehicle: vehicle),
+            chargingSessions: calculateChargingSessions(distance: journey.distanceKm, vehicle: vehicle),
+            hybridFuelNeeded: calculateHybridFuelNeeded(distance: journey.distanceKm, vehicle: vehicle),
+            electricRangeUsed: calculateElectricRangeUsed(distance: journey.distanceKm, vehicle: vehicle)
+        )
+
+        let db = Firestore.firestore()
+        
+        // Save Archived Journey Separately
+        do {
+            let archivedData = try Firestore.Encoder().encode(archivedJourney)
+            db.collection("users").document(userId).collection("archivedJourneys").addDocument(data: archivedData) { error in
+                if let error = error {
+                    print("Error archiving journey: \(error)")
+                } else {
+                    // Remove from Active Journeys
+                    db.collection("users").document(userId).collection("journeys").document(journey.id ?? "").delete { error in
+                        if let error = error {
+                            print("Error deleting journey: \(error)")
+                        } else {
+                            DispatchQueue.main.async {
+                                self.journey = nil // Remove from View
+                            }
+                        }
+                    }
                 }
             }
-            .padding(.top, 8)
+        } catch {
+            print("Error encoding archived journey: \(error)")
         }
     }
 }

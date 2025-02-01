@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
@@ -15,23 +16,19 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let scene = (scene as? UIWindowScene) else { return }
         
         window = UIWindow(windowScene: scene)
-        
-        let hasSeenIntroduction = UserDefaults.standard.bool(forKey: "hasSeenIntroduction")
-        
-        let rootVC: UIViewController
-        if hasSeenIntroduction {
-            rootVC = SignInVC()
+
+        // ✅ Check if user is already authenticated
+        if Auth.auth().currentUser != nil {
+            print("✅ User is already logged in: \(Auth.auth().currentUser?.email ?? "No Email")")
+            window?.rootViewController = TabBarController() // Directly open main app
         } else {
-            rootVC = IntroductionVC()
+            print("🔒 No user found, showing SignInVC")
+            window?.rootViewController = UINavigationController(rootViewController: SignInVC())
         }
         
-        let navigationController = UINavigationController(rootViewController: rootVC)
-        navigationController.navigationBar.isHidden = true
-        
-        window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
     }
-    
+
     func switchToTabBarController() {
         let tabBarController = TabBarController()
         window?.rootViewController = tabBarController
@@ -39,16 +36,13 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func switchToSignInVC() {
-        window?.rootViewController?.children.forEach { child in
-            child.willMove(toParent: nil)
-            child.view.removeFromSuperview()
-            child.removeFromParent()
+        do {
+            try Auth.auth().signOut()
+        } catch {
+            print("❌ Error signing out: \(error.localizedDescription)")
         }
-        window?.rootViewController = nil
-
-        let signInVC = UINavigationController(rootViewController: SignInVC())
-        signInVC.navigationBar.isHidden = true
-        window?.rootViewController = signInVC
+        
+        window?.rootViewController = UINavigationController(rootViewController: SignInVC())
         window?.makeKeyAndVisible()
     }
 }
