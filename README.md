@@ -62,11 +62,11 @@ CocoaPods (if using Firebase)
 Swift 5+
 
 
-** Installation Steps **
+**Installation Steps**
 
 Clone the repository:
 
-git clone https://github.com/yourusername/TravelBuddy.git
+git clone https://github.com/KochieviAna/TravelBuddy
 cd TravelBuddy
 
 Install dependencies:
