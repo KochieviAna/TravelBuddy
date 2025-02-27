@@ -47,19 +47,7 @@ Views like StatisticsView.swift, JourneysView.swift, and ProfileView.swift provi
 SwiftUI views are embedded inside UIKit using UIHostingController where needed.
 
 
-
-**Setup & Installation**
-
-Prerequisites
-
-Xcode (latest version recommended)
-
-CocoaPods (if using Firebase)
-
-Swift 5+
-
-
-**Installation Steps**
+# Installation Steps
 
 Clone the repository:
 
