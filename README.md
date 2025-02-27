@@ -1,12 +1,9 @@
-**Travel Buddy**
-
-
-**Overview**
+# Overview
 
 Travel Buddy is an iOS application that I have designed for frequent travelers, particularly those who drive. The app provides features like trip planning, optimized route selection, fuel and CO2 tracking, and trip archives. It integrates Firebase for authentication and data storage while using both UIKit and SwiftUI for the user interface.
 
 
-**Features**
+# Features
 
 Trip Planning: Users can set destinations and plan trips efficiently.
 
@@ -17,7 +14,7 @@ Trip History & Archives: Users can store and review past trips.
 Multi-Language Support: Supports English and Georgian.
 
 
-**Technologies Used**
+# Technologies Used
 
 UIKit: Used for navigation, authentication screens, and general app structure.
 
