@@ -56,8 +56,6 @@ cd TravelBuddy
 
 Install dependencies:
 
-pod install
-
 Open TravelBuddy.xcworkspace in Xcode.
 
 Configure Firebase:
